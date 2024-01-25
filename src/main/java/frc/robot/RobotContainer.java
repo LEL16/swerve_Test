@@ -20,14 +20,17 @@ import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
+import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(); 
+  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem(0);
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -53,7 +56,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.01) * m_powerLimit,
-        () -> m_operatorController.getRawButton(2)
+        () -> m_operatorController.getRawButton(2), () -> m_operatorController.getRawButton(1)
         ));
 
     field = new Field2d();
@@ -120,6 +123,8 @@ public class RobotContainer {
         () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
 
+    Trigger m_limelightFollow = new Trigger(() -> m_driveController.getRawButton(4));
+    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational"));
     // Trigger m_intakeNote = new Trigger(() -> m_operatorController.getRawButton(2));
     // m_intakeNote.onTrue(new DefaultIntakeCommand(m_intakeSubsystem));
     // m_brake.whileFalse(new InstantCommand(() -> m_intakeSubsystem.getCurrentCommand().cancel()));
