@@ -1,11 +1,18 @@
 package frc.robot.Subsystems;
 
+
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 
 public class LimelightSubsystem extends SubsystemBase {
     private final double kPipelineId;
@@ -22,9 +29,19 @@ public class LimelightSubsystem extends SubsystemBase {
     private NetworkTableEntry pipelineEntry, camModeEntry, ledModeEntry, XEntry, YEntry,
             targetAreaEntry, foundTagEntry;
 
+    private GenericEntry txEntry;
+    private GenericEntry tyEntry;
+    private GenericEntry taEntry;
+
     public LimelightSubsystem(double pipelineId) {
         kPipelineId = pipelineId;
+
+        ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight");
+        txEntry = limelightTab.add("tx", 0).getEntry();
+        tyEntry = limelightTab.add("ty", 0).getEntry();
+        taEntry = limelightTab.add("ta", 0).getEntry();
     }
+
 
     @Override
     public void periodic() {
@@ -48,26 +65,26 @@ public class LimelightSubsystem extends SubsystemBase {
         foundTag = foundTagEntry.getDouble(0.0);
         foundTagBool = foundTag != 0;
 
-        SmartDashboard.putNumberArray("XY and Area", new double[] { XTargetAngle, YTargetAngle, targetArea });
-        SmartDashboard.putBoolean("Found tag", foundTagBool);
+        txEntry.setDouble(XTargetAngle);
+        tyEntry.setDouble(YTargetAngle);
+        taEntry.setDouble(targetArea);    
     }
 
     public double getXTargetAngle() {
         return XTargetAngle;
     }
 
+    public double getYTargetAngle() {
+        return YTargetAngle;
+    }
+
     public double getDistance() {
         targetAreaDistance = Units.inchesToMeters(54.4 * Math.pow(targetArea, -0.475)); // calculate curve using area
                                                                                         // (calculated curve)
-        trigDistance = Units.inchesToMeters((kLimelightLensHeight - kLimelightAngle)
-                / Math.tan(Math.toRadians(YTargetAngle + kLimelightAngle))); // not used, used when added limelight to
-                                                                             // robot
+        trigDistance = Units.inchesToMeters((50.13 - kLimelightLensHeight)
+                / Math.tan(Math.toRadians(YTargetAngle + kLimelightAngle))); // use when mounted "d = (h2-h1) / tan(a1+a2)"
 
         return targetAreaDistance;
     }
-
-    public double getYTargetAngle() {
-        return YTargetAngle;
-
-    }
 }
+

@@ -9,41 +9,30 @@ import frc.robot.Subsystems.IntakeSubsystem;
 public class DefaultIntakeCommand extends Command{
     private IntakeSubsystem m_intakeSubsystem;
 
-    private DoubleSupplier m_pivotVelocity;
+    private DoubleSupplier m_shooterVelocity;
     
-    private BooleanSupplier m_turboMode;
+    private BooleanSupplier m_turboIntakeNote;
     private BooleanSupplier m_intakeNote;
     private BooleanSupplier m_outtakeNote;
 
-    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier pivotVelocity, BooleanSupplier intakeNote, BooleanSupplier outtakeNote, BooleanSupplier turboMode) {
+    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier shooterVelocity, BooleanSupplier intakeNote, BooleanSupplier outtakeNote, BooleanSupplier turboIntakeNote) {
         m_intakeSubsystem = intakeSubsystem;
-        m_pivotVelocity = pivotVelocity;
+        m_shooterVelocity = shooterVelocity;
         m_intakeNote = intakeNote;
         m_outtakeNote = outtakeNote;
-        m_turboMode = turboMode;
+        m_turboIntakeNote = turboIntakeNote;
 
         addRequirements(m_intakeSubsystem);
     }
 
     public void execute() {
-        m_intakeSubsystem.rotate(m_pivotVelocity.getAsDouble() * 7.5);
+        m_intakeSubsystem.rotate(m_shooterVelocity.getAsDouble());
 
-        if(m_intakeNote.getAsBoolean()) {
-            m_intakeSubsystem.intake();
-        } else {
-            m_intakeSubsystem.stop();
-        }
-
-        if (m_turboMode.getAsBoolean()) {
-            m_intakeSubsystem.turboMode();
-        }
-        if(m_outtakeNote.getAsBoolean()) {
-            m_intakeSubsystem.outtake();
-        } 
+        if (m_intakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(-0.25); }
+        if (m_outtakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(0.25); } 
+        if (m_turboIntakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(-1); }
     }
 
     @Override
-    public void end(boolean interrupted) {
-        m_intakeSubsystem.rotate(0);
-    }
+    public void end(boolean interrupted) { m_intakeSubsystem.rotate(0); }
 }

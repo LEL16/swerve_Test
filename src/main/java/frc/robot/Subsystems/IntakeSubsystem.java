@@ -1,60 +1,65 @@
 package frc.robot.Subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+
+import java.util.Map;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private CANSparkMax m_leftPivotMotor;
-    private CANSparkMax m_rightPivotMotor;
+    private CANSparkMax m_leftShooterMotor;
+    private CANSparkMax m_rightShooterMotor;
 
     private CANSparkMax m_leftIntakeMotor;
     private CANSparkMax m_rightIntakeMotor;
 
-    private double m_pivotSpeed = 0;
+    
+    private RelativeEncoder m_leftRelativeEncoder;
+    private RelativeEncoder m_rightRelativeEncoder;
+
+    private double m_shooterSpeed;
+
+    private GenericEntry shooterSpeedEntry;
     
     public IntakeSubsystem() {
-        m_leftPivotMotor = new CANSparkMax (Constants.LEFT_PIVOT_MOTOR, MotorType.kBrushless);
-        m_rightPivotMotor = new CANSparkMax (Constants.RIGHT_PIVOT_MOTOR, MotorType.kBrushless);
+        m_leftShooterMotor = new CANSparkMax (Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
+        m_rightShooterMotor = new CANSparkMax (Constants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
         m_leftIntakeMotor = new CANSparkMax (Constants.LEFT_INTAKE_MOTOR, MotorType.kBrushless);
         m_rightIntakeMotor = new CANSparkMax (Constants.RIGHT_INTAKE_MOTOR, MotorType.kBrushless);
 
-        m_leftPivotMotor.setIdleMode(IdleMode.kBrake);
-        m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
+        m_leftShooterMotor.setIdleMode(IdleMode.kBrake);
+        m_rightShooterMotor.setIdleMode(IdleMode.kBrake);
         m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
         m_rightIntakeMotor.setIdleMode(IdleMode.kBrake);
+
+        m_leftRelativeEncoder = m_leftShooterMotor.getEncoder();
+        m_rightRelativeEncoder = m_rightShooterMotor.getEncoder();
+
+        ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+
+        shooterSpeedEntry = intakeTab.add("Shooter Speed", 0).getEntry();
+        Shuffleboard.getTab("Intake").add("Flywheel Speed", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 1)).getEntry();
     }
 
-    public void rotate(double pivotSpeed) {
-        m_pivotSpeed = pivotSpeed;
-    }
-
-    public void intake() {
-        m_leftIntakeMotor.set(-0.1);
-        m_rightIntakeMotor.set(-0.1);
-    }
-
-    public void turboMode() {
-        m_leftIntakeMotor.set(-1);
-        m_rightIntakeMotor.set(-1);
-    }
-
-    public void outtake() {
-        m_leftIntakeMotor.set(0.1);
-        m_rightIntakeMotor.set(0.1);
-    }
-
-    public void stop() {
-        m_leftIntakeMotor.set(0);
-        m_rightIntakeMotor.set(0);
+    /* Sets speed of the shooter based on axis values of Joystick. */
+    public void rotate(double shooterSpeed) {
+        m_shooterSpeed = shooterSpeed;
     }
 
     @Override
     public void periodic() {
-        m_leftPivotMotor.set(m_pivotSpeed);
-        m_rightPivotMotor.set(m_pivotSpeed);
+        m_leftShooterMotor.set(m_shooterSpeed);
+        m_rightShooterMotor.set(m_shooterSpeed);
+
+        shooterSpeedEntry.setDouble(m_shooterSpeed);
     }
 }
