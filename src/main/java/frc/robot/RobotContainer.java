@@ -56,7 +56,8 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.01) * m_powerLimit,
-        () -> m_operatorController.getRawButton(2), () -> m_operatorController.getRawButton(1)
+        () -> m_operatorController.getRawButton(2), () -> m_operatorController.getRawButton(1),
+        () -> m_operatorController.getRawButton(4)
         ));
 
     field = new Field2d();

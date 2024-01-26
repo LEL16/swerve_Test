@@ -10,14 +10,17 @@ public class DefaultIntakeCommand extends Command{
     private IntakeSubsystem m_intakeSubsystem;
 
     private DoubleSupplier m_pivotVelocity;
+    
+    private BooleanSupplier m_turboMode;
     private BooleanSupplier m_intakeNote;
     private BooleanSupplier m_outtakeNote;
 
-    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier pivotVelocity, BooleanSupplier intakeNote, BooleanSupplier outtakeNote) {
+    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier pivotVelocity, BooleanSupplier intakeNote, BooleanSupplier outtakeNote, BooleanSupplier turboMode) {
         m_intakeSubsystem = intakeSubsystem;
         m_pivotVelocity = pivotVelocity;
         m_intakeNote = intakeNote;
         m_outtakeNote = outtakeNote;
+        m_turboMode = turboMode;
 
         addRequirements(m_intakeSubsystem);
     }
@@ -31,6 +34,9 @@ public class DefaultIntakeCommand extends Command{
             m_intakeSubsystem.stop();
         }
 
+        if (m_turboMode.getAsBoolean()) {
+            m_intakeSubsystem.turboMode();
+        }
         if(m_outtakeNote.getAsBoolean()) {
             m_intakeSubsystem.outtake();
         } 

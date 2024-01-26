@@ -37,6 +37,11 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rightIntakeMotor.set(-0.1);
     }
 
+    public void turboMode() {
+        m_leftIntakeMotor.set(-1);
+        m_rightIntakeMotor.set(-1);
+    }
+
     public void outtake() {
         m_leftIntakeMotor.set(0.1);
         m_rightIntakeMotor.set(0.1);
