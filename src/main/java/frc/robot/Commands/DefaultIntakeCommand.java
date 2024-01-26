@@ -23,7 +23,7 @@ public class DefaultIntakeCommand extends Command{
     }
 
     public void execute() {
-        m_intakeSubsystem.rotate(m_pivotVelocity.getAsDouble());
+        m_intakeSubsystem.rotate(m_pivotVelocity.getAsDouble() * 7.5);
 
         if(m_intakeNote.getAsBoolean()) {
             m_intakeSubsystem.intake();
