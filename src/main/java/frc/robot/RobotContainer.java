@@ -21,6 +21,7 @@ import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.LimelightAlignmentCommand;
+import frc.robot.Commands.LimelightPathfindingCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
@@ -125,11 +126,12 @@ public class RobotContainer {
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
 
     Trigger m_limelightFollow = new Trigger(() -> m_driveController.getRawButton(4));
-    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational"));
-    // Trigger m_intakeNote = new Trigger(() -> m_operatorController.getRawButton(2));
-    // m_intakeNote.onTrue(new DefaultIntakeCommand(m_intakeSubsystem));
-    // m_brake.whileFalse(new InstantCommand(() -> m_intakeSubsystem.getCurrentCommand().cancel()));
+    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    m_limelightFollow.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
+    Trigger m_limelightPathfinding = new Trigger(() -> m_driveController.getRawButton(5));
+    m_limelightPathfinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
+    m_limelightPathfinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
   }
 
   public Command getPathToMiddle() {

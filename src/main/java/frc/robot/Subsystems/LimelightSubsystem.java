@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 import java.util.Map;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -36,7 +39,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
     private double m_areaDistance;
     private double m_trigDistance;
-    private double[] m_tagHeight = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 }; // Add heights here? Or anyway you prefer.
+    private double[] m_tagHeight = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 }; // Add heights here? Or anyway you prefer. Also add coordinate X, Y, and rotation (in degrees) for the below array corresponding to each tag.
+    private Pose2d[] m_tagPose2d = new Pose2d[] { new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0))};
 
     private GenericEntry pipelineIdEntry;
     private GenericEntry camModeEntry;
@@ -50,6 +54,9 @@ public class LimelightSubsystem extends SubsystemBase {
     private GenericEntry targetPoseEntry;
     private GenericEntry areaDistanceEntry;
     private GenericEntry trigDistanceEntry;
+    private GenericEntry distanceToTagEntry;
+
+    SendableChooser<String> trackingModeChooser = new SendableChooser<>();
 
     public LimelightSubsystem() {
         m_networkTable = NetworkTableInstance.getDefault().getTable("limelight"); 
@@ -85,6 +92,13 @@ public class LimelightSubsystem extends SubsystemBase {
         targetPoseEntry = limelightDataLayout.add("Target Pose", 0).getEntry();
         areaDistanceEntry = limelightDataLayout.add("Area Distance", 0).getEntry();
         trigDistanceEntry = limelightDataLayout.add("Trig Distance", 0).getEntry();
+        
+        ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight").getLayout("Tag Tracking Variables", BuiltInLayouts.kList).withSize(2, 2);
+        trackingModeChooser = new SendableChooser<>();
+        trackingModeChooser.setDefaultOption("Translational", "translational");
+        trackingModeChooser.addOption("Rotational", "rotational");
+        tagTrackingLayout.add(trackingModeChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 1);
+        distanceToTagEntry = tagTrackingLayout.add("Distance to Tag (Meters)", 0.80).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
     }
 
     @Override
@@ -108,9 +122,19 @@ public class LimelightSubsystem extends SubsystemBase {
         trigDistanceEntry.setDouble(m_trigDistance);
     }
 
-    public double getAreaDistance(String mode) {
-        if (mode.equals("area")) { return m_areaDistance; } 
-        else if (mode.equals("trig")) { return m_trigDistance; } 
+    public double getDistance(String mode) {
+        if (mode.equals("Area")) { return m_areaDistance; } 
+        else if (mode.equals("Trig")) { return m_trigDistance; } 
         else { return 0.0; }
     }
+
+    public double getXTargetAngle() { return m_tx.getDouble(0); }
+
+    public String getTrackingMode() { return trackingModeChooser.getSelected(); }
+    public double getDistanceToTag() { return distanceToTagEntry.getDouble(0.80); }
+
+
+    public boolean getTagFound() { return m_tv.getDouble(0) != 0; }
+    public double getTagID() { return m_tid[0]; }
+    public Pose2d getTagPose2d(int tagID) { return m_tagPose2d[tagID]; }
 }
