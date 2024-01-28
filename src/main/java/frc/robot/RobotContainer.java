@@ -30,7 +30,7 @@ import frc.robot.Subsystems.LimelightSubsystem;
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(); 
-  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem(0);
+  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);

@@ -27,8 +27,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private RelativeEncoder m_rightRelativeEncoder;
 
     private double m_shooterSpeed;
+    private double m_intakeSpeed;
 
     private GenericEntry shooterSpeedEntry;
+    private GenericEntry flywheelSpeedEntry;
     
     public IntakeSubsystem() {
         m_leftShooterMotor = new CANSparkMax (Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
@@ -47,16 +49,24 @@ public class IntakeSubsystem extends SubsystemBase {
         ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
 
         shooterSpeedEntry = intakeTab.add("Shooter Speed", 0).getEntry();
-        Shuffleboard.getTab("Intake").add("Flywheel Speed", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+        flywheelSpeedEntry = Shuffleboard.getTab("Intake").add("Flywheel Speed", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 1)).getEntry();
     }
 
     /* Sets speed of the shooter based on axis values of Joystick. */
-    public void rotate(double shooterSpeed) {
+    public void shooterRotate(double shooterSpeed) {
         m_shooterSpeed = shooterSpeed;
+    }
+
+    /* Sets speed of the intake based on boolean values of Joystick triggers */
+    public void intakeRotate(double intakeSpeed) {
+        m_intakeSpeed = intakeSpeed;
     }
 
     @Override
     public void periodic() {
+        m_leftIntakeMotor.set(m_intakeSpeed);
+        m_rightIntakeMotor.set(m_intakeSpeed);
+        
         m_leftShooterMotor.set(m_shooterSpeed);
         m_rightShooterMotor.set(m_shooterSpeed);
 

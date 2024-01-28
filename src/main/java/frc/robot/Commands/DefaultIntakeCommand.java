@@ -26,13 +26,13 @@ public class DefaultIntakeCommand extends Command{
     }
 
     public void execute() {
-        m_intakeSubsystem.rotate(m_shooterVelocity.getAsDouble());
+        if (m_intakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(-0.25); }
+        else if (m_outtakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(0.25); } 
+        else if (m_turboIntakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(-1); }
 
-        if (m_intakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(-0.25); }
-        if (m_outtakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(0.25); } 
-        if (m_turboIntakeNote.getAsBoolean()) { m_intakeSubsystem.rotate(-1); }
+        m_intakeSubsystem.shooterRotate(m_shooterVelocity.getAsDouble());
     }
 
     @Override
-    public void end(boolean interrupted) { m_intakeSubsystem.rotate(0); }
+    public void end(boolean interrupted) { m_intakeSubsystem.intakeRotate(0); m_intakeSubsystem.shooterRotate(0);}
 }
