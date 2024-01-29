@@ -40,27 +40,45 @@ public class LimelightSubsystem extends SubsystemBase {
     private double m_areaDistance;
     private double m_trigDistance;
 
-    //Seperate lists for poses for team blue/red, heights remain same
-    //all in inches, and for the center of the tag
-    private double[] m_tagHeight = new double[] {48.5+4.5, // tag 1 (source)
-        48.5+4.5,  //tag 2 (source)
-        51.875+4.5, //tag 3 (speaker)
-        51.875+4.5, //tag 4 (speaker)
-        48.125+4.5, //tag 5 (amp)
-        48.125+4.5, //tag 6 (amp)
-        51.875+4.5, //tag 7 (speaker)
-        51.875+4.5, //tag 8 (speaker)
-        48.5+4.5, //tag 9 (source)
-        48.5+4.5, //tag 10 (source)
-        47.5+4.5, //tag 11 (stage)
-        47.5+4.5, //tag 12 (stage)
-        47.5+4.5, //tag 13 (stage)
-        47.5+4.5, //tag 14 (stage)
-        47.5+4.5, //tag 15 (stage)
-        47.5+4.5}; // tag 16 (stage)
+    // All in inches, array index is tag ID - 1
+    private final double[] m_tagHeight = new double[] { 
+        48.500 + 4.500, // Tag 1 (Source)
+        48.500 + 4.500, // Tag 2 (Source)
+        51.875 + 4.500, // Tag 3 (Speaker)
+        51.875 + 4.500, // Tag 4 (Speaker)
+        48.125 + 4.500, // Tag 5 (Amp)
+        48.125 + 4.500, // Tag 6 (Amp)
+        51.875 + 4.500, // Tag 7 (Speaker)
+        51.875 + 4.500, // Tag 8 (Speaker)
+        48.500 + 4.500, // Tag 9 (Source)
+        48.500 + 4.500, // Tag 10 (Source)
+        47.500 + 4.500, // Tag 11 (Stage)
+        47.500 + 4.500, // Tag 12 (Stage)
+        47.500 + 4.500, // Tag 13 (Stage)
+        47.500 + 4.500, // Tag 14 (Stage)
+        47.500 + 4.500, // Tag 15 (Stage)
+        47.500 + 4.500  // Tag 16 (Stage)
+    };    
 
-
-    private Pose2d[] m_tagPose2d = new Pose2d[] { new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0))};
+    // All in meters, rotation in radians, array index is tag ID - 1
+    private Pose2d[] m_tagPose2d = new Pose2d[] {
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 1 (Source)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 2 (Source)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 3 (Speaker)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 4 (Speaker)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 5 (Amp)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 6 (Amp)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 7 (Speaker)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 8 (Speaker)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 9 (Source)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 10 (Source)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 11 (Stage)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 12 (Stage)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 13 (Stage)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 14 (Stage)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0))), // Tag 15 (Stage)
+        new Pose2d(0.0, 0.0, new Rotation2d(Units.degreesToRadians(0.0)))  // Tag 16 (Stage)
+    };
 
     private GenericEntry pipelineIdEntry;
     private GenericEntry camModeEntry;
@@ -124,7 +142,6 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_areaDistance = Units.inchesToMeters(54.4 * Math.pow(m_ta.getDouble(0), -0.475)); // Calculates distance based on graphed ta values, used google sheets to calculate curve
-        // FIXME: Hriday's making the array of heights, so this is just a placeholder. Refer to m_tagHeight array above, or implement your own dictionary!
         m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid[0] - 1] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
 
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
@@ -156,5 +173,5 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public boolean getTagFound() { return m_tv.getDouble(0) != 0; }
     public double getTagID() { return m_tid[0]; }
-    public Pose2d getTagPose2d(int tagID) { return m_tagPose2d[tagID]; }
+    public Pose2d getTagPose2d(int tagID) { return m_tagPose2d[tagID - 1]; }
 }
