@@ -59,8 +59,25 @@ public class LimelightSubsystem extends SubsystemBase {
         47.5+4.5, //tag 15 (stage)
         47.5+4.5}; // tag 16 (stage)
 
-
-    private Pose2d[] m_tagPose2d = new Pose2d[] { new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0)), new Pose2d(0.0, 0.0, new Rotation2d(0.0))};
+    //in meters (bottom left on pathplanner is 0,0)
+    private Pose2d[] m_tagPose2d = new Pose2d[] { 
+        new Pose2d(15.23, 0.88, new Rotation2d(0.0)), //tag 1
+        new Pose2d(15.91, 1.25, new Rotation2d(0.0)), //tag 2
+        new Pose2d(16.5, 5, new Rotation2d(0.0)), //tag 3
+        new Pose2d(16.3, 5.6, new Rotation2d(0.0)), //tag 4
+        new Pose2d(14.7, 8.1, new Rotation2d(0.0)), //tag 5
+        new Pose2d(1.8, 8.2, new Rotation2d(0.0)), //tag 6
+        new Pose2d(0.65, 5.5, new Rotation2d(0.0)), //tag 7
+        new Pose2d(0, 5, new Rotation2d(0.0)), //tag 8
+        new Pose2d(0.65, 0.7, new Rotation2d(0.0)), //tag 9
+        new Pose2d(1.2, .4, new Rotation2d(0.0)), //tag 10
+        new Pose2d(12, 3.75, new Rotation2d(0.0)), //tag 11
+        new Pose2d(12, 4.5, new Rotation2d(0.0)), //tag 12
+        new Pose2d(11.25, 4, new Rotation2d(0.0)), //tag 13
+        new Pose2d(5.35, 4, new Rotation2d(0.0)), //tag 14
+        new Pose2d(4.65, 4.5, new Rotation2d(0.0)), //tag 15
+        new Pose2d(4.65, 3.75, new Rotation2d(0.0)), //tag 16
+    }; 
 
     private GenericEntry pipelineIdEntry;
     private GenericEntry camModeEntry;
