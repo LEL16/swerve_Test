@@ -115,6 +115,16 @@ public class RobotContainer {
     Trigger m_pathfinding = new Trigger(() -> m_driveController.getRawButton(2));
     m_pathfinding.onTrue(getPathToMiddle());
 
+    // Driver button LB
+    Trigger m_limelightPathfinding = new Trigger(() -> m_driveController.getRawButton(5));
+    m_limelightPathfinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
+    m_limelightPathfinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+
+    // Driver button RB
+    Trigger m_limelightFollow = new Trigger(() -> m_driveController.getRawButton(6));
+    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    m_limelightFollow.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
         || (m_driveController.getPOV() <= 45 && m_driveController.getPOV() >= 0)));
@@ -124,14 +134,6 @@ public class RobotContainer {
     Trigger m_decrementPowerLimit = new Trigger(
         () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
-
-    Trigger m_limelightFollow = new Trigger(() -> m_driveController.getRawButton(4));
-    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
-    m_limelightFollow.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
-
-    Trigger m_limelightPathfinding = new Trigger(() -> m_driveController.getRawButton(5));
-    m_limelightPathfinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
-    m_limelightPathfinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
   }
 
   public Command getPathToMiddle() {
