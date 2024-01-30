@@ -117,7 +117,7 @@ public class LimelightSubsystem extends SubsystemBase {
         ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight");
         
         pipelineIdEntry = limelightTab.add("Pipeline ID", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 9)).getEntry();
-        camModeEntry = limelightTab.add("Camera Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        // camModeEntry = limelightTab.add("Camera Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
         ledModeEntry = limelightTab.add("LED Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
         ShuffleboardLayout limelightDataLayout = Shuffleboard.getTab("Limelight").getLayout("Limelight Data", BuiltInLayouts.kList).withSize(2, 3);
@@ -143,9 +143,9 @@ public class LimelightSubsystem extends SubsystemBase {
     public void periodic() {
         m_areaDistance = Units.inchesToMeters(54.4 * Math.pow(m_ta.getDouble(0), -0.475)); // Calculates distance based on graphed ta values, used google sheets to calculate curve
         m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid[0]] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
-
+  
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
-        m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
+        // m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
         m_ledMode.setNumber(ledModeEntry.getBoolean(false) ? 3 : 1);
 
         XEntry.setDouble(m_tx.getDouble(0));
