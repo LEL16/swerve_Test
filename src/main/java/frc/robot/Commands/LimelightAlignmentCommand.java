@@ -40,7 +40,7 @@ public class LimelightAlignmentCommand extends Command {
 
         m_xPID = new PIDController(0.5, 0, 0);
         m_yPID = new PIDController(0.5, 0, 0);
-        m_rotPID = new PIDController(0.5, 0, 0);
+        m_rotPID = new PIDController(0.025, 0, 0);
 
         ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight").getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
 
@@ -58,7 +58,7 @@ public class LimelightAlignmentCommand extends Command {
     public void execute() {
         m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05) * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
         m_yVel = MathUtil.applyDeadband(m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag), 0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
-        m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.5) * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
+        m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05) * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
 
         m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
@@ -77,7 +77,7 @@ public class LimelightAlignmentCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(m_limelightSubsystem.getXTargetAngle()) <= 0.5 && (Math.abs(m_limelightSubsystem.getDistance("Area") - m_distanceToTag) <= 0.05 || m_trackingMode == "rotational"); // If the robot is within 0.5 degrees of the target and 0.05 meters of the target, the command is finished
+        return (Math.abs(m_limelightSubsystem.getDistance("Area") - m_distanceToTag) <= 0.05); // If the robot is within 0.5 degrees of the target and 0.05 meters of the target, the command is finished || m_trackingMode == "rotational"
     }
 
     @Override

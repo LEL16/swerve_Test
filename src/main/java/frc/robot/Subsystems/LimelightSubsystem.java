@@ -118,7 +118,7 @@ public class LimelightSubsystem extends SubsystemBase {
         
         pipelineIdEntry = limelightTab.add("Pipeline ID", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 9)).getEntry();
         // camModeEntry = limelightTab.add("Camera Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-        ledModeEntry = limelightTab.add("LED Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        // ledModeEntry = limelightTab.add("LED Mode", 0).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
         ShuffleboardLayout limelightDataLayout = Shuffleboard.getTab("Limelight").getLayout("Limelight Data", BuiltInLayouts.kList).withSize(2, 3);
         XEntry = limelightDataLayout.add("X Angle", 0).getEntry();
@@ -146,7 +146,7 @@ public class LimelightSubsystem extends SubsystemBase {
   
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
         // m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
-        m_ledMode.setNumber(ledModeEntry.getBoolean(false) ? 3 : 1);
+        // m_ledMode.setNumber(ledModeEntry.getBoolean(false) ? 3 : 1);
 
         XEntry.setDouble(m_tx.getDouble(0));
         YEntry.setDouble(m_ty.getDouble(0));
