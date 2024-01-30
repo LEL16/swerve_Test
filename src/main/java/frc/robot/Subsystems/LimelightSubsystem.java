@@ -32,7 +32,7 @@ public class LimelightSubsystem extends SubsystemBase {
     private NetworkTableEntry m_ty;
     private NetworkTableEntry m_ta;
     private NetworkTableEntry m_tv;
-    private double[] m_tid;
+    private NetworkTableEntry m_tid;
 
     private double[] m_botPose;
     private double[] m_targetPose;
@@ -108,7 +108,7 @@ public class LimelightSubsystem extends SubsystemBase {
         m_ty = m_networkTable.getEntry("ty"); // Vertical offset from crosshair to target (-24.85 to 24.85 degrees)
         m_ta = m_networkTable.getEntry("ta"); // Target area (0% of image to 100% of image)
         m_tv = m_networkTable.getEntry("tv"); // Any valid targets (0 or 1 (found))
-        m_tid = m_networkTable.getEntry("tid").getDoubleArray(new double[6]); // Target april tag ID (0, 1, 2, 3, 4, 5)
+        m_tid = m_networkTable.getEntry("tid"); // Target april tag ID (0, 1, 2, 3, 4, 5)
 
         // Needs testing!
         m_botPose = m_networkTable.getEntry("botpose").getDoubleArray(new double[6]); // Pose of the robot in the world frame (x, y, z, pitch, yaw, roll)
@@ -142,7 +142,7 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_areaDistance = Units.inchesToMeters(54.4 * Math.pow(m_ta.getDouble(0), -0.475)); // Calculates distance based on graphed ta values, used google sheets to calculate curve
-        m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid[0]] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
+        // m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid.getDouble(0)] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
   
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
         // m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
@@ -152,7 +152,7 @@ public class LimelightSubsystem extends SubsystemBase {
         YEntry.setDouble(m_ty.getDouble(0));
         targetAreaEntry.setDouble(m_ta.getDouble(0));
         foundTagEntry.setDouble(m_tv.getDouble(0));
-        tagIdEntry.setDouble(m_tid[0]);
+        tagIdEntry.setDouble(m_tid.getDouble(0));
         botPoseEntry.setDoubleArray(m_botPose);
         targetPoseEntry.setDoubleArray(m_targetPose);
         areaDistanceEntry.setDouble(m_areaDistance);
@@ -172,6 +172,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
 
     public boolean getTagFound() { return m_tv.getDouble(0) != 0; }
-    public double getTagID() { return m_tid[0]; }
+    public double getTagID() { return m_tid.getDouble(0.0); }
     public Pose2d getTagPose2d(int tagID) { return m_tagPose2d[tagID - 1]; }
 }
