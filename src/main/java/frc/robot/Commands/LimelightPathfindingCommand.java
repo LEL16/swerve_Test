@@ -33,7 +33,7 @@ public class LimelightPathfindingCommand extends Command {
 
         ShuffleboardLayout limelightPathfindingLayout = Shuffleboard.getTab("Limelight").getLayout("Pathfinding", BuiltInLayouts.kList).withSize(2, 2);
         tagIdEntry = limelightPathfindingLayout.add("Tag ID", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
-        pose2dEntry = limelightPathfindingLayout.add("Pose2d Target", new Pose2d(0, 0, new Rotation2d(0))).withWidget(BuiltInWidgets.kTextView).getEntry();
+        // pose2dEntry = limelightPathfindingLayout.add("Pose2d Target", new Pose2d(0, 0, new Rotation2d(0))).withWidget(BuiltInWidgets.kTextView).getEntry();
 
         addRequirements(m_drivetrainSubsystem);
     }

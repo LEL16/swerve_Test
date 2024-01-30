@@ -142,7 +142,7 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_areaDistance = Units.inchesToMeters(54.4 * Math.pow(m_ta.getDouble(0), -0.475)); // Calculates distance based on graphed ta values, used google sheets to calculate curve
-        m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid[0] - 1] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
+        m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid[0]] - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite = height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
 
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
         m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
