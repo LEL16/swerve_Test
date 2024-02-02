@@ -29,10 +29,12 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 52; 
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(-2.8); 
 
-    public static final int LEFT_INTAKE_MOTOR = 20;
-    public static final int RIGHT_INTAKE_MOTOR = 21;
-    public static final int LEFT_SHOOTER_MOTOR = 22;
-    public static final int RIGHT_SHOOTER_MOTOR = 23;
+    public static final int LEFT_SHOOTER_MOTOR = 33;
+    public static final int RIGHT_SHOOTER_MOTOR = 32;
+
+    public static final int RIGHT_PIVOT_MOTOR = 21;
+    public static final int LEFT_PIVOT_MOTOR = 22;
+    public static final int INTAKE_MOTOR = 20;
 
 
 

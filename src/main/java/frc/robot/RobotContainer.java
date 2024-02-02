@@ -18,20 +18,27 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
+import frc.robot.Commands.DefaultIntakeCommand;
+import frc.robot.Commands.DefaultPivotCommand;
 // import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.LimelightPathfindingCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
+import frc.robot.Subsystems.IntakeSubsystem;
 // import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
+import frc.robot.Subsystems.PivotSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(); 
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
+  private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -51,15 +58,21 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxSpeed,
         () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed,
-        () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
+        () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(5), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
-    // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-    //     m_intakeSubsystem,
-    //     () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.01) * m_powerLimit,
-    //     () -> m_operatorController.getRawButton(2), () -> m_operatorController.getRawButton(1),
-    //     () -> m_operatorController.getRawButton(4)
-    //     ));
+    m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
+        m_pivotSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit
+        ));
+
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+        m_intakeSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(4), 0.01) * m_powerLimit,
+        () -> m_operatorController.getRawButton(2), 
+        () -> m_operatorController.getRawButton(1),
+        () -> m_operatorController.getRawButton(4)
+        ));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
