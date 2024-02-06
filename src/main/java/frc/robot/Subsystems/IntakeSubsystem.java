@@ -21,11 +21,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private CANSparkMax m_leftIntakeMotor;
 
+    // private RelativeEncoder m_leftShooterEncoder = new Enco;
+
     private double m_shooterSpeed;
     private double m_intakeSpeed;
 
     private GenericEntry shooterSpeedEntry;
-    private GenericEntry flywheelSpeedEntry;
+    private GenericEntry flywheelSpeedEntry;    
     
     public IntakeSubsystem() {
         m_leftShooterMotor = new CANSparkMax (Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
