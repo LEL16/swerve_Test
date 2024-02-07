@@ -18,7 +18,7 @@ public class PositionIntakeCommand extends Command{
     private BooleanSupplier m_midPosition;
     private BooleanSupplier m_topPosition;
 
-    PositionIntakeCommand(PivotSubsystem pivotSubsystem, double pivotPositionRad, booleanSupplier zeroPosition, booleanSupplier midPosition, booleanSupplier topPosition) {
+    PositionIntakeCommand(PivotSubsystem pivotSubsystem, double pivotPositionRad, BooleanSupplier zeroPosition, BooleanSupplier midPosition, BooleanSupplier topPosition) {
         m_pivotSubsystem = pivotSubsystem;
         m_pivotPositionRad = m_pivotPositionRad;
 
@@ -32,8 +32,8 @@ public class PositionIntakeCommand extends Command{
     }
 
     public void execute() {
-        pivotPositionRad = m_
-        m_pivotPIDController(m);
+       // pivotPositionRad = m_
+       // m_pivotPIDController(m);
     }
 
     @Override
