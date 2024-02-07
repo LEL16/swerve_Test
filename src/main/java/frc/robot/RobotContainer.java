@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
@@ -21,7 +22,6 @@ import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultPivotCommand;
-// import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.LimelightPathfindingCommand;
@@ -67,9 +67,10 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(4), 0.01) * m_powerLimit,
-        () -> m_operatorController.getRawButton(2), 
-        () -> m_operatorController.getRawButton(1),
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
+        () -> m_operatorController.getRawButton(5), 
+        () -> m_operatorController.getRawButton(6),
         () -> m_operatorController.getRawButton(4)
         ));
 
@@ -93,24 +94,23 @@ public class RobotContainer {
 
     // NamedCommands.registerCommand("resetPos", new InstantCommand(() -> setPose(0,
     // 0, 0))); // Example registered command
-    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
     configureButtons();
   }
 
-  // Currently used for testing kinematics
+  // Currently used for testing kinematicsa
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
 
-    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
-    return autoChooser.getSelected();
+    // autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
+    // SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
+    // return autoChooser.getSelected();
 
     // NamedCommands.registerCommand("Shoot Note", () -> m_intakeSubsystem.shooterRotate(1));
 
 
-    // return new PathPlannerAuto("Hello"); // Debugging return statement
+    return new PathPlannerAuto("Auto 1"); // Debugging return statement
 
     // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0,
     // Math.toRadians(45), 3.66, 10.35);

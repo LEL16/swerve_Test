@@ -19,6 +19,8 @@ public class PivotSubsystem extends SubsystemBase {
     private CANSparkMax m_leftPivotMotor;
     private CANSparkMax m_rightPivotMotor;
 
+    private RelativeEncoder m_pivotEncoder;
+
     private double m_pivotSpeed;
 
     private GenericEntry pivotSpeedEntry;
@@ -30,6 +32,8 @@ public class PivotSubsystem extends SubsystemBase {
         m_leftPivotMotor.setIdleMode(IdleMode.kBrake);
         m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
 
+        m_pivotEncoder = m_leftPivotMotor.getEncoder();
+        m_pivotEncoder.setPositionConversionFactor(kGearRatio);
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
 
         pivotSpeedEntry = pivotTab.add("Pivot Speed", 0).getEntry();

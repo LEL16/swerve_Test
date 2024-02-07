@@ -92,16 +92,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
       () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
       (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond, chassisSpeed.omegaRadiansPerSecond, false),
       new HolonomicPathFollowerConfig(
-        new PIDConstants(5.0, 0.0, 0.0), // Translational
+        new PIDConstants(5.60, 0.0, 0.0), // Translational
         new PIDConstants(6.33, 0.0, 0.0), // Rotational
-        kMaxSpeed,
+        3.81,
         kTrackWidth,
         new ReplanningConfig()
       ),
       () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Blue;
+          return alliance.get() == DriverStation.Alliance.Red;
         }
         return false;
       },
