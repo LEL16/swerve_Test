@@ -28,12 +28,13 @@ public class PivotSubsystem extends SubsystemBase {
 
         // Assuming the left pivot motor's encoder is used for feedback
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
+
         // Set the position conversion factor based on your gear ratio
-        m_pivotEncoder.setPositionConversionFactor(1 / 240 * 2 * Math.PI); // Example value, adjust as needed
+        m_pivotEncoder.setPositionConversionFactor(1); // Example value, adjust as needed
 
         // Shuffleboard setup for monitoring, not essential for functionality
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
-        pivotAngleEntry = pivotTab.add("Pivot Angle", m_pivotEncoder.getPosition()).getEntry();
+        pivotAngleEntry = pivotTab.add("Pivot Angle", 0).getEntry();
     }
 
     // Method to set pivot rotation speed
@@ -51,6 +52,6 @@ public class PivotSubsystem extends SubsystemBase {
     // Ensure motors stop when not being controlled
     @Override
     public void periodic() {
-        pivotAngleEntry.setDouble(m_pivotEncoder.getPosition());
+        pivotAngleEntry.setDouble(getCurrentPivotPosition());
     }
 }

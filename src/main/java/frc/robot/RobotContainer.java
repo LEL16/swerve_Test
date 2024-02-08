@@ -28,7 +28,7 @@ import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.LimelightPathfindingCommand;
 import frc.robot.Commands.PositionDriveCommand;
-import frc.robot.Commands.PositionIntakeCommand;
+import frc.robot.Commands.PositionPivotCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
@@ -68,14 +68,13 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit *.3  
         ));
 
-    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-        m_intakeSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
-        () -> m_operatorController.getRawButton(5), 
-        () -> m_operatorController.getRawButton(6),
-        () -> m_operatorController.getRawButton(4)
-        ));
+        m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+          m_intakeSubsystem,
+          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
+          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.01) * m_powerLimit, 
+          () -> m_operatorController.getRawButton(6),
+          () -> m_operatorController.getRawButton(4)
+          ));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -155,15 +154,15 @@ public class RobotContainer {
 
     Trigger m_pivotLowPosition = new Trigger(
       () -> m_operatorController.getRawButton(1));
-    m_pivotLowPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+    m_pivotLowPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
 
     Trigger m_pivotMidPosition = new Trigger(
       () -> m_operatorController.getRawButton(2));
-    m_pivotMidPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+    m_pivotMidPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
 
     Trigger m_pivotHighPosition = new Trigger(
       () -> m_operatorController.getRawButton(4));
-    m_pivotHighPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+    m_pivotHighPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
 
     
   }
