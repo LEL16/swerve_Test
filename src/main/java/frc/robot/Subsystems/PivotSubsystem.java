@@ -2,14 +2,10 @@ package frc.robot.Subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-
-import java.util.Map;
-
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,32 +16,41 @@ public class PivotSubsystem extends SubsystemBase {
     private CANSparkMax m_rightPivotMotor;
 
     private RelativeEncoder m_pivotEncoder;
+    private GenericEntry pivotAngleEntry;
 
-    private double m_pivotSpeed;
-
-    private GenericEntry pivotSpeedEntry;
-    
     public PivotSubsystem() {
-        m_leftPivotMotor = new CANSparkMax (Constants.LEFT_PIVOT_MOTOR, MotorType.kBrushless);
-        m_rightPivotMotor = new CANSparkMax (Constants.RIGHT_PIVOT_MOTOR, MotorType.kBrushless);
+        m_leftPivotMotor = new CANSparkMax(Constants.LEFT_PIVOT_MOTOR, MotorType.kBrushless);
+        m_rightPivotMotor = new CANSparkMax(Constants.RIGHT_PIVOT_MOTOR, MotorType.kBrushless);
 
+        // Set motors to brake mode to hold position when not moving
         m_leftPivotMotor.setIdleMode(IdleMode.kBrake);
         m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
 
+        // Assuming the left pivot motor's encoder is used for feedback
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
-        m_pivotEncoder.setPositionConversionFactor(9); // 4:1 and a 5:1
+        // Set the position conversion factor based on your gear ratio
+        m_pivotEncoder.setPositionConversionFactor(1 / 240 * 2 * Math.PI); // Example value, adjust as needed
+
+        // Shuffleboard setup for monitoring, not essential for functionality
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
-
-        pivotSpeedEntry = pivotTab.add("Pivot Speed", 0).getEntry();
+        pivotAngleEntry = pivotTab.add("Pivot Angle", m_pivotEncoder.getPosition()).getEntry();
     }
 
-    /* Sets speed of the shooter based on axis values of Joystick. */
-    public void pivotRotate(double pivotSpeed) {
-        m_pivotSpeed = pivotSpeed;
+    // Method to set pivot rotation speed
+    public void pivotRotate(double speed) {
+        m_leftPivotMotor.set(speed);
+        // Inverting speed for the right motor, adjust if necessary for your design
+        m_rightPivotMotor.set(-speed);
     }
 
+    // Method to get current pivot position from the encoder
+    public double getCurrentPivotPosition() {
+        return m_pivotEncoder.getPosition();
+    }
+
+    // Ensure motors stop when not being controlled
     @Override
     public void periodic() {
-        m_leftPivotMotor.set(m_pivotSpeed);
-        m_rightPivotMotor.set(-m_pivotSpeed);    }
+        pivotAngleEntry.setDouble(m_pivotEncoder.getPosition());
+    }
 }

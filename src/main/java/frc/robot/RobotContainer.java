@@ -1,5 +1,7 @@
 package frc.robot;
 
+import javax.swing.text.Position;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -26,6 +28,7 @@ import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.LimelightPathfindingCommand;
 import frc.robot.Commands.PositionDriveCommand;
+import frc.robot.Commands.PositionIntakeCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
@@ -149,6 +152,20 @@ public class RobotContainer {
     Trigger m_decrementPowerLimit = new Trigger(
         () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
+
+    Trigger m_pivotLowPosition = new Trigger(
+      () -> m_operatorController.getRawButton(1));
+    m_pivotLowPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+
+    Trigger m_pivotMidPosition = new Trigger(
+      () -> m_operatorController.getRawButton(2));
+    m_pivotMidPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+
+    Trigger m_pivotHighPosition = new Trigger(
+      () -> m_operatorController.getRawButton(4));
+    m_pivotHighPosition.onTrue(new PositionIntakeCommand(m_pivotSubsystem, "Low"));
+
+    
   }
 
   public Command getPathToMiddle() {
