@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
 
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
 
-    m_container.autonomousCommands().schedule();
+    m_container.getAutonomousCommand().schedule();
   }
 
   @Override

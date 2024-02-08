@@ -19,9 +19,11 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
     private static final double kIntakeGearRatio = 1;
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
+    public static final double kIntakeAutonRate = 5676.0 * kIntakeGearRatio * 0.5; // rpm
 
     private static final double kRotateGearRatio = (1.0 / 20.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
+    public static final double kRotateAutonAngularSpeed = 5676.0 * 0.5 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
     private final CANSparkMax m_intakeMotor;
     private final CANSparkMax m_rotateMotor;
