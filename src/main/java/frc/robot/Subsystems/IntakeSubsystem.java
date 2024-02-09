@@ -18,12 +18,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+
 public class IntakeSubsystem extends SubsystemBase {
-    private static final double kIntakeGearRatio = 1;
+    private static final double kIntakeGearRatio = (1.0 / 4.0);
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
     public static final double kIntakeAutonRate = 5676.0 * kIntakeGearRatio * 0.5; // rpm
 
-    private static final double kRotateGearRatio = (1.0 / 20.0);
+    private static final double kRotateGearRatio = (1.0 / 20.0) * (60.0 / 64.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
     public static final double kRotateAutonAngularSpeed = 5676.0 * 0.5 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
@@ -37,18 +38,20 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput m_lowLimitSwitch;
     private final DigitalInput m_highLimitSwitch;
 
-    private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00211);
-    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.40377);
+    private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
+    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.43069);
 
     private final GenericEntry m_intakeRateEntry;
     private final GenericEntry m_rotateAngleEntry;
     private final GenericEntry m_rotateAngularSpeedEntry;
+    private final GenericEntry m_beamBreakSensorEntry;
+    private final GenericEntry m_lowLimitSwitchEntry;
+    private final GenericEntry m_highLimitSwitchEntry;
 
     private double m_intakeRate;
     private double m_angularSpeed;
 
-    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-    private final 
+    
 
     public IntakeSubsystem() {
         m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
@@ -73,10 +76,19 @@ public class IntakeSubsystem extends SubsystemBase {
         m_highLimitSwitch = new DigitalInput(Constants.HIGH_LIMIT_SWITCH);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
-        ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 0);
+        ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
+        
+        
         m_intakeRateEntry = intakeLayout.add("Intake Rate", m_intakeEncoder.getVelocity()).getEntry();
         m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition()).getEntry();
         m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity()).getEntry();
+
+        m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", m_beamBreakSensor.get()).getEntry();
+        m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
+        m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
+
+
+
     }
 
     /**
@@ -112,6 +124,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeRateEntry.setDouble(m_intakeEncoder.getVelocity());
         m_rotateAngleEntry.setDouble(m_rotateEncoder.getPosition());
         m_rotateAngularSpeedEntry.setDouble(m_rotateEncoder.getVelocity());
+        m_beamBreakSensorEntry.setBoolean(m_beamBreakSensor.get());
+        m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
+        m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());
     }
 
     @Override
