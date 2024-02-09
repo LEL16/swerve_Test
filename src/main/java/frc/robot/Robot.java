@@ -36,9 +36,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
-
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
-
     m_container.getAutonomousCommand().schedule();
   }
 

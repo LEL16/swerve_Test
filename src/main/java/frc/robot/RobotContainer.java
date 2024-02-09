@@ -103,6 +103,8 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
+    autoChooser = AutoBuilder.buildAutoChooser("test123"); // Default path
+    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
     return autoChooser.getSelected();
   }
 
