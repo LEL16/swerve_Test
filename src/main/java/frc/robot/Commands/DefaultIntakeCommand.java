@@ -10,18 +10,16 @@ public class DefaultIntakeCommand extends Command{
     private IntakeSubsystem m_intakeSubsystem;
 
     private DoubleSupplier m_intakeShooterVelocity;
-    private DoubleSupplier m_outtakeShooterVelocity;
 
     private double m_shooterVelocity;
     
     private BooleanSupplier m_turboIntakeNote;
-    private BooleanSupplier m_intakeNote;
+    private DoubleSupplier m_intakeNote;
     private BooleanSupplier m_outtakeNote;
 
-    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier intakeShooterVelocity, DoubleSupplier outtakeShooterVelocity, BooleanSupplier intakeNote, BooleanSupplier outtakeNote, BooleanSupplier turboIntakeNote) {
+    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier intakeShooterVelocity, DoubleSupplier intakeNote, BooleanSupplier outtakeNote, BooleanSupplier turboIntakeNote) {
         m_intakeSubsystem = intakeSubsystem;
         m_intakeShooterVelocity = intakeShooterVelocity;
-        m_outtakeShooterVelocity = outtakeShooterVelocity;
         m_intakeNote = intakeNote;
         m_outtakeNote = outtakeNote;
         m_turboIntakeNote = turboIntakeNote;
@@ -30,14 +28,14 @@ public class DefaultIntakeCommand extends Command{
     }
 
     public void execute() {
-        if (m_intakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(-0.4); }
-        else if (m_outtakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(0.4); } 
+        if (Math.abs(m_intakeNote.getAsDouble()) > 0.01) { m_intakeSubsystem.intakeRotate(-0.8); }
+        else if (m_outtakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(0.8); } 
         else if (m_turboIntakeNote.getAsBoolean()) { m_intakeSubsystem.intakeRotate(-1); }
         else {
             m_intakeSubsystem.intakeRotate(0);
         }
 
-        m_shooterVelocity = (m_intakeShooterVelocity.getAsDouble() > 0.02) ? m_intakeShooterVelocity.getAsDouble() : m_outtakeShooterVelocity.getAsDouble() * 0.2;
+        m_shooterVelocity = m_intakeShooterVelocity.getAsDouble();
         m_intakeSubsystem.shooterRotate(m_shooterVelocity);
     }
 
