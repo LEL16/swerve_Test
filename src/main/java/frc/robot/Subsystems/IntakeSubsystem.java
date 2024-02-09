@@ -46,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /* Sets speed of the shooter based on axis values of Joystick. */
     public void shooterRotate(double shooterSpeed) {
-        m_shooterSpeed = -shooterSpeed;
+        m_shooterSpeed = -shooterSpeed * 2;
     }
 
     /* Sets speed of the intake based on boolean values of Joystick triggers */

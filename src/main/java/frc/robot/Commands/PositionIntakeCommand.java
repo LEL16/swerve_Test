@@ -22,7 +22,7 @@ public class PositionIntakeCommand extends Command {
 
         m_pivotPosition = pivotPosition;
 
-        m_pivotPIDController = new PIDController(0.5, 0.02, 0.01);
+        m_pivotPIDController = new PIDController(0.005, 0, 0);
         addRequirements(m_pivotSubsystem);
     }
 
@@ -30,18 +30,18 @@ public class PositionIntakeCommand extends Command {
     public void execute() {
         double setpoint = getDesiredPosition();
         double currentPos = m_pivotSubsystem.getCurrentPivotPosition();
-        double pidOutput = m_pivotPIDController.calculate(currentPos, setpoint);
+        double pidOutput = m_pivotPIDController.calculate(setpoint - currentPos);
 
         m_pivotSubsystem.pivotRotate(pidOutput);
     }
 
     private double getDesiredPosition() {
         if (m_pivotPosition == "Zero") {
-            return ZERO_POSITION_RAD;
+            return 13;
         } else if (m_pivotPosition == "Mid") {
-            return MID_POSITION_RAD;
+            return 32;
         } else if (m_pivotPosition == "Top") {
-            return TOP_POSITION_RAD;
+            return 70;
         }
         return 0; // Default to zero position if no button is pressed
     }

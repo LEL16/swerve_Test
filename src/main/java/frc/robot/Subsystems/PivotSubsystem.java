@@ -18,6 +18,7 @@ public class PivotSubsystem extends SubsystemBase {
     private RelativeEncoder m_pivotEncoder;
     private GenericEntry pivotAngleEntry;
 
+
     public PivotSubsystem() {
         m_leftPivotMotor = new CANSparkMax(Constants.LEFT_PIVOT_MOTOR, MotorType.kBrushless);
         m_rightPivotMotor = new CANSparkMax(Constants.RIGHT_PIVOT_MOTOR, MotorType.kBrushless);
@@ -29,7 +30,7 @@ public class PivotSubsystem extends SubsystemBase {
         // Assuming the left pivot motor's encoder is used for feedback
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
         // Set the position conversion factor based on your gear ratio
-        m_pivotEncoder.setPositionConversionFactor(1 / 240 * 2 * Math.PI); // Example value, adjust as needed
+        m_pivotEncoder.setPositionConversionFactor(1); // Example value, adjust as needed
 
         // Shuffleboard setup for monitoring, not essential for functionality
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
