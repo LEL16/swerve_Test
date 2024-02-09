@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.Commands.DefaultOuttakeCommand;
+import frc.robot.Subsystems.OuttakeSubsystem;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -44,6 +46,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double m_intakeRate;
     private double m_angularSpeed;
+
+    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    private final 
 
     public IntakeSubsystem() {
         m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);

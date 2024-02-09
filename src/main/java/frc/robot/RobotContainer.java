@@ -18,6 +18,7 @@ import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
+import frc.robot.Commands.DefaultOuttakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
@@ -59,13 +60,18 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed
     ));
 
-    /*
+    
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.25
     ));
-    */
+
+    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+        m_outtakeSubsystem, 
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate
+    ));
+    
 
 
 
@@ -131,14 +137,11 @@ public class RobotContainer {
     m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
-    Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
-        || (m_driveController.getPOV() <= 45 && m_driveController.getPOV() >= 0)));
-    m_incrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(0.2)));
+    Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
 
     // Driver D-pad down
-    Trigger m_decrementPowerLimit = new Trigger(
-        () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
-    m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
+    Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
+
   }
 
   public void setPose(double xPos, double yPos, double theta) {
@@ -151,4 +154,15 @@ public class RobotContainer {
       m_powerLimit += delta;
     }
   }
+
+  private double getDPadInput(Joystick joystick) {
+    if (joystick.getPOV() >= 315 || (joystick.getPOV() <= 45 && joystick.getPOV() >= 0)) {
+      return 1.0;
+    }
+    if (joystick.getPOV() >= 135 && joystick.getPOV() <= 225) {
+      return -1.0;
+    }
+    return 0;
+  }
+
 }
