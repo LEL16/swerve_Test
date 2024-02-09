@@ -147,7 +147,7 @@ public class IntakeSubsystem extends SubsystemBase {
     /** Returns whether the intake can be activated. */
     public boolean canIntake() {
         if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
-            return false;
+            return true;
         }
         return true;
     }
@@ -155,10 +155,10 @@ public class IntakeSubsystem extends SubsystemBase {
     /** Returns whether the intake can rotate. */
     public boolean canRotate() {
         if (m_angularSpeed > 0 && !m_highLimitSwitch.get()) {
-            return false;
+            return true;
         }
         if (m_angularSpeed < 0 && !m_lowLimitSwitch.get()) {
-            return false;
+            return true;
         }
         return true;
     }
