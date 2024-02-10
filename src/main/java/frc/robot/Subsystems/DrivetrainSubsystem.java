@@ -97,6 +97,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
 
+    /* PathPlanner */
     AutoBuilder.configureHolonomic(
         () -> new Pose2d(this.getPosition(), this.getAngle()),
         (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),

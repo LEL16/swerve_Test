@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -63,12 +62,12 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-      m_intakeSubsystem,
+        m_intakeSubsystem,
         () -> m_operatorController.getRawButton(5),
         () -> m_operatorController.getRawButton(6)));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-      m_outtakeSubsystem,
+        m_outtakeSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit));
 
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
@@ -79,7 +78,7 @@ public class RobotContainer {
     m_field = new Field2d();
 
     ShuffleboardTab autonomousTab = Shuffleboard.getTab("Autonomous");
-    
+
     autonomousTab.add("Field", m_field);
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       m_field.setRobotPose(pose);
@@ -126,17 +125,18 @@ public class RobotContainer {
 
     // Driver button B
     Trigger m_pathfinding = new Trigger(() -> m_driveController.getRawButton(2));
-    m_pathfinding.onTrue(getPathToMiddle());
+    m_pathfinding.onTrue(AutoBuilder.pathfindToPose(new Pose2d(8.30, 4.10, Rotation2d.fromDegrees(90)),
+        new PathConstraints(2.0, 2.0, Units.degreesToRadians(180), Units.degreesToRadians(180)), 0.0, 0.0));
 
     // Driver button LB
-    Trigger m_limelightPathfinding = new Trigger(() -> m_driveController.getRawButton(5));
-    m_limelightPathfinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
-    m_limelightPathfinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    Trigger m_limelightPathFinding = new Trigger(() -> m_driveController.getRawButton(5));
+    m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
+    m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver button RB
-    Trigger m_limelightFollow = new Trigger(() -> m_driveController.getRawButton(6));
-    m_limelightFollow.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
-    m_limelightFollow.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
+    m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    m_limelightAlignment.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
@@ -165,11 +165,6 @@ public class RobotContainer {
         () -> m_operatorController.getRawButton(4));
     m_pivotHighPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
     m_pivotHighPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
-  }
-
-  public Command getPathToMiddle() {
-    return AutoBuilder.pathfindToPose(new Pose2d(8.30, 4.10, Rotation2d.fromDegrees(90)),
-        new PathConstraints(2.0, 2.0, Units.degreesToRadians(180), Units.degreesToRadians(180)), 0.0, 0.0);
   }
 
   public void setPose(double xPos, double yPos, double theta) {
