@@ -5,7 +5,9 @@ import frc.robot.Subsystems.DrivetrainSubsystem;
 
 import java.util.function.DoubleSupplier;
 
-/** A teleoperated command that allows joystick input to control the drivetrain. */
+/**
+ * A teleoperated command that allows joystick input to control the drivetrain.
+ */
 public class DefaultDriveCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
@@ -14,17 +16,17 @@ public class DefaultDriveCommand extends Command {
     private final DoubleSupplier m_rotationSupplier;
 
     /**
-    * Command to drive the robot using joystick input.
-    *
-    * @param drivetrainSubsystem The swerve drive subsystem.
-    * @param translationXSupplier The x translational velocity (m/s).
-    * @param translationYSupplier The y translational velocity (m/s).
-    * @param rotationSupplier The rotational velocity (rad/s).
-    */
+     * Command to drive the robot using joystick input.
+     *
+     * @param drivetrainSubsystem  The swerve drive subsystem.
+     * @param translationXSupplier The x translational velocity (m/s).
+     * @param translationYSupplier The y translational velocity (m/s).
+     * @param rotationSupplier     The rotational velocity (rad/s).
+     */
     public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-                               DoubleSupplier translationXSupplier,
-                               DoubleSupplier translationYSupplier,
-                               DoubleSupplier rotationSupplier) {
+            DoubleSupplier translationXSupplier,
+            DoubleSupplier translationYSupplier,
+            DoubleSupplier rotationSupplier) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
@@ -39,10 +41,11 @@ public class DefaultDriveCommand extends Command {
                 m_translationXSupplier.getAsDouble(),
                 m_translationYSupplier.getAsDouble(),
                 m_rotationSupplier.getAsDouble(),
-                true
-        );
+                true);
     }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, false); }
+    public void end(boolean interrupted) {
+        m_drivetrainSubsystem.drive(0, 0, 0, false);
+    }
 }

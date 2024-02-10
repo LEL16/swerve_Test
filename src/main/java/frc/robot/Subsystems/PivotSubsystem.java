@@ -37,16 +37,19 @@ public class PivotSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Update the pivot angle entry on Shuffleboard with the current position of the pivot encoder
+        // Update the pivot angle entry on Shuffleboard with the current position of the
+        // pivot encoder
         pivotAngleEntry.setDouble(m_pivotEncoder.getPosition());
-        // Update the pivot speed entry on Shuffleboard with the current speed of the pivot motors
+        // Update the pivot speed entry on Shuffleboard with the current speed of the
+        // pivot motors
         pivotSpeedEntry.setDouble(m_pivotEncoder.getVelocity());
     }
 
     /**
      * Rotate the pivot motors at the specified speed.
      * 
-     * @param speed The speed at which to rotate the pivot motors. Positive values rotate clockwise, negative values rotate counterclockwise.
+     * @param speed The speed at which to rotate the pivot motors. Positive values
+     *              rotate clockwise, negative values rotate counterclockwise.
      */
     public void pivotRotate(double speed) {
         m_leftPivotMotor.set(speed);

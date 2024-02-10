@@ -6,7 +6,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
-/** An autonomous command that translates and rotates the robot to any absolute position */
+/**
+ * An autonomous command that translates and rotates the robot to any absolute
+ * position
+ */
 public class PositionDriveCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
@@ -36,27 +39,27 @@ public class PositionDriveCommand extends Command {
     private boolean m_isTimeRecorded;
 
     /**
-    * Command to drive the robot autonomously.
-    *
-    * @param drivetrainSubsystem The swerve drive subsystem.
-    * @param x The x coordinate to move to (m).
-    * @param y The y coordinate to move to (m).
-    * @param theta The angle to rotate to (rad).
-    * @param translationalVelocity The resultant theoretical translational velocity (m/s).
-    * @param rotationalVelocity The theoretical rotational velocity (rad/s).
-    */
+     * Command to drive the robot autonomously.
+     *
+     * @param drivetrainSubsystem   The swerve drive subsystem.
+     * @param x                     The x coordinate to move to (m).
+     * @param y                     The y coordinate to move to (m).
+     * @param theta                 The angle to rotate to (rad).
+     * @param translationalVelocity The resultant theoretical translational velocity
+     *                              (m/s).
+     * @param rotationalVelocity    The theoretical rotational velocity (rad/s).
+     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-                                double x,
-                                double y,
-                                double theta,
-                                double translationalVelocity,
-                                double rotationalVelocity) {
+            double x,
+            double y,
+            double theta,
+            double translationalVelocity,
+            double rotationalVelocity) {
         m_drivetrainSubsystem = drivetrainSubsystem;
-        
+
         if (x == 0 && y == 0) {
             m_x = 0.001;
-        }
-        else {
+        } else {
             m_x = x;
         }
         m_y = y;
@@ -94,7 +97,7 @@ public class PositionDriveCommand extends Command {
         m_pidY.setTolerance(0.05);
         m_pidTheta.setTolerance(0.05);
     }
-    
+
     @Override
     public void execute() {
         if (!m_isTimeRecorded) {
@@ -104,19 +107,24 @@ public class PositionDriveCommand extends Command {
 
         m_outputX = Math.min(m_pidX.calculate(m_drivetrainSubsystem.getPosition().getX(), m_x), m_translationXSupplier);
         m_outputY = Math.min(m_pidY.calculate(m_drivetrainSubsystem.getPosition().getY(), m_y), m_translationYSupplier);
-        m_outputTheta = Math.min(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
+        m_outputTheta = Math.min(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta),
+                m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 m_outputX,
                 m_outputY,
                 m_outputTheta,
-                true
-        );
+                true);
     }
 
     @Override
-    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + 5000); }
+    public boolean isFinished() {
+        return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint())
+                || (System.currentTimeMillis() > m_recordedTime + 5000);
+    }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
+    public void end(boolean interrupted) {
+        m_drivetrainSubsystem.drive(0, 0, 0, true);
+    }
 }

@@ -14,11 +14,13 @@ public class DefaultPivotCommand extends Command {
     /**
      * Constructs a new DefaultPivotCommand.
      * 
-     * @param pivotSubsystem The pivot subsystem to control.
-     * @param pivotVelocitySupplier  A supplier of the pivot velocity.
-     * @param pivotResetEncoders A supplier that provides the reset encoders value.
+     * @param pivotSubsystem        The pivot subsystem to control.
+     * @param pivotVelocitySupplier A supplier of the pivot velocity.
+     * @param pivotResetEncoders    A supplier that provides the reset encoders
+     *                              value.
      */
-    public DefaultPivotCommand(PivotSubsystem pivotSubsystem, DoubleSupplier pivotVelocitySupplier, BooleanSupplier pivotResetEncoders) {
+    public DefaultPivotCommand(PivotSubsystem pivotSubsystem, DoubleSupplier pivotVelocitySupplier,
+            BooleanSupplier pivotResetEncoders) {
         m_pivotSubsystem = pivotSubsystem;
         m_pivotVelocitySupplier = pivotVelocitySupplier;
         m_pivotResetEncoders = pivotResetEncoders;

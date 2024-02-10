@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private CANSparkMax m_intakeMotor; 
+    private CANSparkMax m_intakeMotor;
 
-    private double m_intakeSpeed; 
+    private double m_intakeSpeed;
 
     private GenericEntry intakeSpeedEntry;
-    
+
     public IntakeSubsystem() {
-        m_intakeMotor = new CANSparkMax (Constants.INTAKE_MOTOR, MotorType.kBrushless);
+        m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
         m_intakeMotor.setIdleMode(IdleMode.kBrake);
 
         ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
@@ -42,7 +42,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Update the intake speed entry on Shuffleboard with the current speed of the intake motor
+        // Update the intake speed entry on Shuffleboard with the current speed of the
+        // intake motor
         intakeSpeedEntry.setDouble(m_intakeSpeed);
     }
 }

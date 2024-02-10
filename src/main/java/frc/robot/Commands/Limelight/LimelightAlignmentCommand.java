@@ -42,23 +42,29 @@ public class LimelightAlignmentCommand extends Command {
         m_yPID = new PIDController(0.5, 0, 0);
         m_rotPID = new PIDController(0.025, 0, 0);
 
-        ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight").getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
+        ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight")
+                .getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
 
         xVelEntry = tagTrackingLayout.add("X Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         yVelEntry = tagTrackingLayout.add("Y Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         rotVelEntry = tagTrackingLayout.add("Rotational Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
-        trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView).getEntry();
+        trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView)
+                .getEntry();
 
-        powerLimit = Shuffleboard.getTab("Limelight").add("Power Limit", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+        powerLimit = Shuffleboard.getTab("Limelight").add("Power Limit", 1).withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", 1)).getEntry();
 
         addRequirements(m_drivetrainSubsystem);
     }
 
     @Override
     public void execute() {
-        m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05) * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
-        m_yVel = MathUtil.applyDeadband(m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag), 0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
-        m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05) * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
+        m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
+                * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
+        m_yVel = MathUtil.applyDeadband(m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag),
+                0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
+        m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
+                * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
 
         m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
@@ -67,7 +73,8 @@ public class LimelightAlignmentCommand extends Command {
                 m_trackingMode == "translational" ? m_xVel : 0,
                 m_trackingMode == "translational" ? m_yVel : 0,
                 m_trackingMode == "rotational" ? m_rotVel : 0,
-                m_trackingMode == "translational" ? true : false); // Drives the robot based on the tracking mode selected
+                m_trackingMode == "translational" ? true : false); // Drives the robot based on the tracking mode
+                                                                   // selected
 
         xVelEntry.setDouble(m_xVel); // Shuffleboard data
         yVelEntry.setDouble(m_yVel);
@@ -77,7 +84,13 @@ public class LimelightAlignmentCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(m_limelightSubsystem.getDistance("Area") - m_distanceToTag) <= 0.05); // If the robot is within 0.5 degrees of the target and 0.05 meters of the target, the command is finished || m_trackingMode == "rotational"
+        return (Math.abs(m_limelightSubsystem.getDistance("Area") - m_distanceToTag) <= 0.05); // If the robot is within
+                                                                                               // 0.5 degrees of the
+                                                                                               // target and 0.05 meters
+                                                                                               // of the target, the
+                                                                                               // command is finished ||
+                                                                                               // m_trackingMode ==
+                                                                                               // "rotational"
     }
 
     @Override

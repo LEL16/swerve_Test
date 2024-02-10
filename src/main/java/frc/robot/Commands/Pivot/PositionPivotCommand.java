@@ -23,7 +23,6 @@ public class PositionPivotCommand extends Command {
 
         m_pivotPIDController = new PIDController(0.1, 0.1, 0.1);
 
-
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
         PIDOutputEntry = pivotTab.add("PID Output", 0).getEntry();
         PIDSetpointEntry = pivotTab.add("PID Setpoint", 0).getEntry();
@@ -35,7 +34,7 @@ public class PositionPivotCommand extends Command {
     @Override
     public void execute() {
         double PIDOutput = m_pivotPIDController.calculate(m_pivotSubsystem.getPivotAngle(), getDesiredPosition());
-        
+
         PIDOutputEntry.setDouble(PIDOutput);
         PIDSetpointEntry.setDouble(getDesiredPosition());
         PIDErrorEntry.setDouble(m_pivotPIDController.getPositionError());

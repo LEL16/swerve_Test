@@ -22,10 +22,10 @@ public class OuttakeSubsystem extends SubsystemBase {
     private double m_shooterSpeed;
 
     private GenericEntry shooterSpeedEntry;
-    
+
     public OuttakeSubsystem() {
-        m_leftShooterMotor = new CANSparkMax (Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
-        m_rightShooterMotor = new CANSparkMax (Constants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
+        m_leftShooterMotor = new CANSparkMax(Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
+        m_rightShooterMotor = new CANSparkMax(Constants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
 
         m_leftShooterMotor.setIdleMode(IdleMode.kBrake);
         m_rightShooterMotor.setIdleMode(IdleMode.kBrake);
@@ -38,7 +38,8 @@ public class OuttakeSubsystem extends SubsystemBase {
     /**
      * Rotates the shooter motors at the specified speed.
      * 
-     * @param speed The speed at which to rotate the shooter motors. Positive values rotate clockwise, negative values rotate counterclockwise.
+     * @param speed The speed at which to rotate the shooter motors. Positive values
+     *              rotate clockwise, negative values rotate counterclockwise.
      */
     public void outtakeRotate(double speed) {
         m_shooterSpeed = -speed * 2;
@@ -48,7 +49,8 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Update the shooter speed entry on Shuffleboard with the current speed of the shooter motors
+        // Update the shooter speed entry on Shuffleboard with the current speed of the
+        // shooter motors
         shooterSpeedEntry.setDouble(m_shooterSpeed);
     }
 }

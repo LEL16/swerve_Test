@@ -8,10 +8,10 @@ public class BrakeCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     /**
-    * Command to brake the drivetrain.
-    *
-    * @param drivetrainSubsystem The swerve drive subsystem.
-    */
+     * Command to brake the drivetrain.
+     *
+     * @param drivetrainSubsystem The swerve drive subsystem.
+     */
     public BrakeCommand(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
 
@@ -24,10 +24,11 @@ public class BrakeCommand extends Command {
                 0,
                 0,
                 0.0001,
-                true
-        );
+                true);
     }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
+    public void end(boolean interrupted) {
+        m_drivetrainSubsystem.drive(0, 0, 0, true);
+    }
 }

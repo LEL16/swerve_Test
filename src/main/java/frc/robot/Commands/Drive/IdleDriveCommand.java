@@ -12,20 +12,22 @@ public class IdleDriveCommand extends Command {
     private Timer m_timer;
 
     /**
-    * Command to idle the drivetrain indefinetely.
-    *
-    * @param drivetrainSubsystem The swerve drive subsystem.
-    */
-    public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem) { this(drivetrainSubsystem, Double.POSITIVE_INFINITY); }
+     * Command to idle the drivetrain indefinetely.
+     *
+     * @param drivetrainSubsystem The swerve drive subsystem.
+     */
+    public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem) {
+        this(drivetrainSubsystem, Double.POSITIVE_INFINITY);
+    }
 
     /**
-    * Command to idle the drivetrain definitely.
-    *
-    * @param drivetrainSubsystem The swerve drive subsystem.
-    * @param waitTime The amount time to idle (s).
-    */
+     * Command to idle the drivetrain definitely.
+     *
+     * @param drivetrainSubsystem The swerve drive subsystem.
+     * @param waitTime            The amount time to idle (s).
+     */
     public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-                                double waitTime) {
+            double waitTime) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_waitTime = waitTime;
         m_timer = new Timer();

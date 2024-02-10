@@ -13,8 +13,8 @@ public class DefaultOuttakeCommand extends Command {
     /**
      * Constructs a new DefaultOuttakeCommand.
      * 
-     * @param outtakeSubsystem The outtake subsystem to control.
-     * @param outtakeVelocitySupplier  A supplier of the outtake velocity.
+     * @param outtakeSubsystem        The outtake subsystem to control.
+     * @param outtakeVelocitySupplier A supplier of the outtake velocity.
      */
     public DefaultOuttakeCommand(OuttakeSubsystem outtakeSubsystem, DoubleSupplier outtakeVelocitySupplier) {
         m_outtakeSubsystem = outtakeSubsystem;
@@ -36,5 +36,5 @@ public class DefaultOuttakeCommand extends Command {
     public void end(boolean interrupted) {
         m_outtakeSubsystem.outtakeRotate(0);
     }
-    
+
 }
