@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,7 +46,7 @@ public class RobotContainer {
   private double m_powerLimit = 1.0;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private Field2d field;
+  private Field2d m_field;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -60,11 +62,13 @@ public class RobotContainer {
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
-    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(m_intakeSubsystem,
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+      m_intakeSubsystem,
         () -> m_operatorController.getRawButton(5),
         () -> m_operatorController.getRawButton(6)));
 
-    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(m_outtakeSubsystem,
+    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+      m_outtakeSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit));
 
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
@@ -72,43 +76,37 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
         () -> m_operatorController.getRawButton(1)));
 
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-    // Logging callback for current robot pose
+    m_field = new Field2d();
+
+    ShuffleboardTab autonomousTab = Shuffleboard.getTab("Autonomous");
+    
+    autonomousTab.add("Field", m_field);
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.setRobotPose(pose);
+      m_field.setRobotPose(pose);
     });
-    // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.getObject("target pose").setPose(pose);
+      m_field.getObject("target pose").setPose(pose);
     });
-    // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
-      // Add what we want to do with poses
-      field.getObject("path").setPoses(poses);
+      m_field.getObject("path").setPoses(poses);
     });
-
-    // NamedCommands.registerCommand("resetPos", new InstantCommand(() -> setPose(0,
-    // 0, 0))); // Example registered command
-    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    configureButtons();
-  }
-
-  // Currently used for testing kinematicsa
-  public Command autonomousCommands() {
-    m_powerLimit = 1.0;
-
-    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
 
     NamedCommands.registerCommand("Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.5)));
     NamedCommands.registerCommand("Stop Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.0)));
     NamedCommands.registerCommand("Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.5)));
     NamedCommands.registerCommand("Stop Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.0)));
 
+    // NamedCommands.registerCommand("resetPos", new InstantCommand(() -> setPose(0,
+    // 0, 0))); // Example registered command
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
+    autonomousTab.add("Auto Chooser", autoChooser);
+
+    configureButtons();
+  }
+
+  // Currently used for testing kinematics
+  public Command autonomousCommands() {
+    m_powerLimit = 1.0;
     // return new PathPlannerAuto("DefaultAuton"); // Debugging return statement
 
     // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0,

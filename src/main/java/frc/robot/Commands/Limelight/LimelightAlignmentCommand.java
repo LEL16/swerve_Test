@@ -57,41 +57,40 @@ public class LimelightAlignmentCommand extends Command {
         addRequirements(m_drivetrainSubsystem);
     }
 
-    @Override
-    public void execute() {
+        @Override
+        public void execute() {
         m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
-                * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
+            * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
         m_yVel = MathUtil.applyDeadband(m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag),
-                0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
+            0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
         m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
-                * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
+            * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
 
         m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
 
         m_drivetrainSubsystem.drive(
-                m_trackingMode == "translational" ? m_xVel : 0,
-                m_trackingMode == "translational" ? m_yVel : 0,
-                m_trackingMode == "rotational" ? m_rotVel : 0,
-                m_trackingMode == "translational" ? true : false); // Drives the robot based on the tracking mode
-                                                                   // selected
+            m_trackingMode.equals("translational") ? m_xVel : 0,
+            m_trackingMode.equals("translational") ? m_yVel : 0,
+            m_trackingMode.equals("rotational") ? m_rotVel : 0,
+            m_trackingMode.equals("translational")); // Drives the robot based on the tracking mode selected
 
         xVelEntry.setDouble(m_xVel); // Shuffleboard data
         yVelEntry.setDouble(m_yVel);
         rotVelEntry.setDouble(m_rotVel);
         trackingModeEntry.setString(m_trackingMode);
-    }
+        }
 
-    @Override
-    public boolean isFinished() {
+        @Override
+        public boolean isFinished() {
         return (Math.abs(m_limelightSubsystem.getDistance("Area") - m_distanceToTag) <= 0.05); // If the robot is within
-                                                                                               // 0.5 degrees of the
-                                                                                               // target and 0.05 meters
-                                                                                               // of the target, the
-                                                                                               // command is finished ||
-                                                                                               // m_trackingMode ==
-                                                                                               // "rotational"
-    }
+                                                       // 0.5 degrees of the
+                                                       // target and 0.05 meters
+                                                       // of the target, the
+                                                       // command is finished ||
+                                                       // m_trackingMode ==
+                                                       // "rotational"
+        }
 
     @Override
     public void end(boolean interrupted) {

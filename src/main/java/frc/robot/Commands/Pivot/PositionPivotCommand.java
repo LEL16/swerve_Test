@@ -2,7 +2,9 @@ package frc.robot.Commands.Pivot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.PivotSubsystem;
@@ -23,10 +25,12 @@ public class PositionPivotCommand extends Command {
 
         m_pivotPIDController = new PIDController(0.1, 0.1, 0.1);
 
-        ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
-    // PIDOutputEntry = pivotTab.add("PID Output " + m_position, 0).getEntry();
-    // PIDSetpointEntry = pivotTab.add("PID Setpoint " + m_position, 0).getEntry();
-    // PIDErrorEntry = pivotTab.add("PID Error " + m_position, 0).getEntry();
+        ShuffleboardLayout pivotShuffleboardLayout = Shuffleboard.getTab("Pivot")
+                .getLayout("Pivot Shuffleboard Data", BuiltInLayouts.kList).withSize(2, 2);
+
+        PIDOutputEntry = pivotShuffleboardLayout.add("PID Output " + m_position, 0).getEntry();
+        PIDSetpointEntry = pivotShuffleboardLayout.add("PID Setpoint " + m_position, 0).getEntry();
+        PIDErrorEntry = pivotShuffleboardLayout.add("PID Error " + m_position, 0).getEntry();
 
         addRequirements(m_pivotSubsystem);
     }

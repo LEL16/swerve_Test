@@ -42,20 +42,22 @@ public class LimelightPathfindingCommand extends Command {
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         AutoBuilder.pathfindToPose(m_targetPose2d,
                 new PathConstraints(2.0, 2.0, Units.degreesToRadians(180), Units.degreesToRadians(180)), 0.0, 0.0); // Pathfind
                                                                                                                     // to
                                                                                                                     // the
                                                                                                                     // target
                                                                                                                     // pose
+    }
 
-        while (!m_limelightSubsystem.getTagFound()) {
+    @Override
+    public void execute() {
+        if (!m_limelightSubsystem.getTagFound()) {
             m_drivetrainSubsystem.drive(0, 0, 2.5, false);
-        } // Spin until the tag is found
-        if (m_limelightSubsystem.getTagFound()) {
-            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem);
-        } // Align to the tag
+        } else {
+            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem).schedule();
+        }
 
         tagIdEntry.setDouble(m_tagID);
         pose2dEntry.setString(m_targetPose2d.toString());
@@ -63,7 +65,7 @@ public class LimelightPathfindingCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return m_limelightSubsystem.getTagFound();
     }
 
     @Override

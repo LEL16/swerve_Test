@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -61,6 +62,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveDriveKinematics m_kinematics;
 
   private final SwerveDriveOdometry m_odometry;
+
+  private final Field2d m_field;
 
   private final GenericEntry m_frontLeftDriveSpeedEntry;
   private final GenericEntry m_frontLeftSteerAngleEntry;
@@ -150,6 +153,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometryXEntry = odometryLayout.add("X Position", getPosition().getX()).getEntry();
     m_odometryYEntry = odometryLayout.add("Y Position", getPosition().getY()).getEntry();
     m_odometryThetaEntry = odometryLayout.add("Angle", getAngle().getDegrees()).getEntry();
+
+    m_field = new Field2d();
+    tab.add(m_field);
   }
 
   /**
@@ -243,6 +249,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometryXEntry.setDouble(getPosition().getX());
     m_odometryYEntry.setDouble(getPosition().getY());
     m_odometryThetaEntry.setDouble(getAngle().getDegrees());
+
+    m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   @Override
