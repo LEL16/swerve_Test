@@ -9,7 +9,7 @@ import frc.robot.Subsystems.IntakeSubsystem;
 public class DefaultIntakeCommand extends Command {
     private IntakeSubsystem m_intakeSubsystem;
 
-    private DoubleSupplier m_intakeNoteSupplier;
+    private BooleanSupplier m_intakeNoteSupplier;
     private BooleanSupplier m_outtakeNoteSupplier;
 
     /**
@@ -19,7 +19,7 @@ public class DefaultIntakeCommand extends Command {
      * @param intakeNoteSupplier  A supplier that provides the intake note value.
      * @param outtakeNoteSupplier A supplier that provides the outtake note value.
      */
-    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier intakeNoteSupplier,
+    public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, BooleanSupplier intakeNoteSupplier,
             BooleanSupplier outtakeNoteSupplier) {
         m_intakeSubsystem = intakeSubsystem;
         m_intakeNoteSupplier = intakeNoteSupplier;
@@ -30,10 +30,10 @@ public class DefaultIntakeCommand extends Command {
 
     @Override
     public void execute() {
-        if (Math.abs(m_intakeNoteSupplier.getAsDouble()) > 0.05) {
+        if (m_intakeNoteSupplier.getAsBoolean()) {
             m_intakeSubsystem.intakeRotate(-0.8);
         } else if (m_outtakeNoteSupplier.getAsBoolean()) {
-            m_intakeSubsystem.intakeRotate(0.8);
+            m_intakeSubsystem.intakeRotate(0.3);
         } else {
             m_intakeSubsystem.intakeRotate(0);
         }

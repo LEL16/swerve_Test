@@ -61,7 +61,7 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(m_intakeSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.01) * m_powerLimit,
+        () -> m_operatorController.getRawButton(5),
         () -> m_operatorController.getRawButton(6)));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(m_outtakeSubsystem,
@@ -70,7 +70,7 @@ public class RobotContainer {
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
         m_pivotSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
-        () -> m_operatorController.getRawButton(5)));
+        () -> m_operatorController.getRawButton(1)));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -109,7 +109,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.5)));
     NamedCommands.registerCommand("Stop Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.0)));
 
-    // return new PathPlannerAuto("Auto 1"); // Debugging return statement
+    // return new PathPlannerAuto("DefaultAuton"); // Debugging return statement
 
     // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0,
     // Math.toRadians(45), 3.66, 10.35);

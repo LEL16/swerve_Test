@@ -42,7 +42,7 @@ public class OuttakeSubsystem extends SubsystemBase {
      *              rotate clockwise, negative values rotate counterclockwise.
      */
     public void outtakeRotate(double speed) {
-        m_shooterSpeed = -speed * 2;
+        m_shooterSpeed = -speed * 1.25;
         m_leftShooterMotor.set(m_shooterSpeed);
         m_rightShooterMotor.set(m_shooterSpeed);
     }

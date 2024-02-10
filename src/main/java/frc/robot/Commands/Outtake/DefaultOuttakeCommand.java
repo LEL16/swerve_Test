@@ -24,7 +24,7 @@ public class DefaultOuttakeCommand extends Command {
     }
 
     public void execute() {
-        m_outtakeSubsystem.outtakeRotate(m_outtakeVelocitySupplier.getAsDouble());
+        m_outtakeSubsystem.outtakeRotate(m_outtakeVelocitySupplier.getAsDouble() * 0.75);
     }
 
     /**

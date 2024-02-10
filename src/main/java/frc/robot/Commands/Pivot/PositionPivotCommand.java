@@ -24,9 +24,9 @@ public class PositionPivotCommand extends Command {
         m_pivotPIDController = new PIDController(0.1, 0.1, 0.1);
 
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
-        PIDOutputEntry = pivotTab.add("PID Output", 0).getEntry();
-        PIDSetpointEntry = pivotTab.add("PID Setpoint", 0).getEntry();
-        PIDErrorEntry = pivotTab.add("PID Error", 0).getEntry();
+    // PIDOutputEntry = pivotTab.add("PID Output " + m_position, 0).getEntry();
+    // PIDSetpointEntry = pivotTab.add("PID Setpoint " + m_position, 0).getEntry();
+    // PIDErrorEntry = pivotTab.add("PID Error " + m_position, 0).getEntry();
 
         addRequirements(m_pivotSubsystem);
     }

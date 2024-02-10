@@ -27,8 +27,8 @@ public class PivotSubsystem extends SubsystemBase {
         m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
 
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
-        m_pivotEncoder.setPositionConversionFactor(1 / 204 * 360);
-        m_pivotEncoder.setVelocityConversionFactor(1 / 204 * 360);
+        m_pivotEncoder.setPositionConversionFactor(-1 / 204 * 360);
+        m_pivotEncoder.setVelocityConversionFactor(-1 / 204 * 360);
 
         ShuffleboardTab pivotTab = Shuffleboard.getTab("Pivot");
         pivotAngleEntry = pivotTab.add("Pivot Angle", 0).getEntry();
