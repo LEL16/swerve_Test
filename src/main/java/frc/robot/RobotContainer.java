@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -100,17 +101,19 @@ public class RobotContainer {
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
 
-    // autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
-    // SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
-    // return autoChooser.getSelected();
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
+    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
 
-    // NamedCommands.registerCommand("Shoot Note", () ->
-    // m_intakeSubsystem.shooterRotate(1));
+    NamedCommands.registerCommand("Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.5)));
+    NamedCommands.registerCommand("Stop Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.0)));
+    NamedCommands.registerCommand("Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.5)));
+    NamedCommands.registerCommand("Stop Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.0)));
 
-    return new PathPlannerAuto("Auto 1"); // Debugging return statement
+    // return new PathPlannerAuto("Auto 1"); // Debugging return statement
 
     // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0,
     // Math.toRadians(45), 3.66, 10.35);
+    return autoChooser.getSelected();
   }
 
   private void configureButtons() {
