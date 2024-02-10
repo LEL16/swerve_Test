@@ -1,9 +1,6 @@
 package frc.robot;
 
-import javax.swing.text.Position;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -18,19 +15,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.BrakeCommand;
-import frc.robot.Commands.DefaultDriveCommand;
-import frc.robot.Commands.DefaultIntakeCommand;
-import frc.robot.Commands.DefaultPivotCommand;
-import frc.robot.Commands.IdleDriveCommand;
-import frc.robot.Commands.LimelightAlignmentCommand;
-import frc.robot.Commands.LimelightPathfindingCommand;
-import frc.robot.Commands.PositionDriveCommand;
-import frc.robot.Commands.PositionPivotCommand;
+import frc.robot.Commands.Drive.BrakeCommand;
+import frc.robot.Commands.Drive.DefaultDriveCommand;
+import frc.robot.Commands.Intake.DefaultIntakeCommand;
+import frc.robot.Commands.Limelight.LimelightAlignmentCommand;
+import frc.robot.Commands.Limelight.LimelightPathfindingCommand;
+import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
+import frc.robot.Commands.Pivot.DefaultPivotCommand;
+import frc.robot.Commands.Pivot.PositionPivotCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.PivotSubsystem;
 
@@ -38,9 +34,9 @@ import frc.robot.Subsystems.PivotSubsystem;
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
-  private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-
+  private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
+  private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -63,18 +59,17 @@ public class RobotContainer {
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(m_intakeSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.01) * m_powerLimit,
+        () -> m_operatorController.getRawButton(6)));
+
+    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(m_outtakeSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit));
+
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
         m_pivotSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit *.3  
-        ));
-
-        m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-          m_intakeSubsystem,
-          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit,
-          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.01) * m_powerLimit, 
-          () -> m_operatorController.getRawButton(6),
-          () -> m_operatorController.getRawButton(4)
-          ));
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
+        () -> m_operatorController.getRawButton(5)));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -109,8 +104,8 @@ public class RobotContainer {
     // SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
     // return autoChooser.getSelected();
 
-    // NamedCommands.registerCommand("Shoot Note", () -> m_intakeSubsystem.shooterRotate(1));
-
+    // NamedCommands.registerCommand("Shoot Note", () ->
+    // m_intakeSubsystem.shooterRotate(1));
 
     return new PathPlannerAuto("Auto 1"); // Debugging return statement
 
@@ -152,19 +147,23 @@ public class RobotContainer {
         () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
 
+    // Operator button A
     Trigger m_pivotLowPosition = new Trigger(
-      () -> m_operatorController.getRawButton(1));
-    m_pivotLowPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
+        () -> m_operatorController.getRawButton(1));
+    m_pivotLowPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
+    m_pivotLowPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
+    // Operator button B
     Trigger m_pivotMidPosition = new Trigger(
-      () -> m_operatorController.getRawButton(2));
-    m_pivotMidPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
+        () -> m_operatorController.getRawButton(2));
+    m_pivotMidPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
+    m_pivotMidPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
+    // Operator button X
     Trigger m_pivotHighPosition = new Trigger(
-      () -> m_operatorController.getRawButton(4));
-    m_pivotHighPosition.onTrue(new PositionPivotCommand(m_pivotSubsystem, "Low"));
-
-    
+        () -> m_operatorController.getRawButton(4));
+    m_pivotHighPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
+    m_pivotHighPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
   }
 
   public Command getPathToMiddle() {

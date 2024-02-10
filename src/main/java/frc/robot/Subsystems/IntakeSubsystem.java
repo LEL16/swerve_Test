@@ -16,51 +16,33 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private CANSparkMax m_leftShooterMotor;
-    private CANSparkMax m_rightShooterMotor;
+    private CANSparkMax m_intakeMotor; 
 
-    private CANSparkMax m_leftIntakeMotor;
+    private double m_intakeSpeed; 
 
-    // private RelativeEncoder m_leftShooterEncoder = new Enco;
-
-    private double m_shooterSpeed;
-    private double m_intakeSpeed;
-
-    private GenericEntry shooterSpeedEntry;
-    private GenericEntry flywheelSpeedEntry;    
+    private GenericEntry intakeSpeedEntry;
     
     public IntakeSubsystem() {
-        m_leftShooterMotor = new CANSparkMax (Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
-        m_rightShooterMotor = new CANSparkMax (Constants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
-        m_leftIntakeMotor = new CANSparkMax (Constants.INTAKE_MOTOR, MotorType.kBrushless);
-
-        m_leftShooterMotor.setIdleMode(IdleMode.kBrake);
-        m_rightShooterMotor.setIdleMode(IdleMode.kBrake);
-        m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
+        m_intakeMotor = new CANSparkMax (Constants.INTAKE_MOTOR, MotorType.kBrushless);
+        m_intakeMotor.setIdleMode(IdleMode.kBrake);
 
         ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-
-        shooterSpeedEntry = intakeTab.add("Shooter Speed", 0).getEntry();
-        flywheelSpeedEntry = Shuffleboard.getTab("Intake").add("Flywheel Speed", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+        intakeSpeedEntry = intakeTab.add("Intake Speed", 0).getEntry();
     }
 
-    /* Sets speed of the shooter based on axis values of Joystick. */
-    public void shooterRotate(double shooterSpeed) {
-        m_shooterSpeed = -shooterSpeed * 2;
-    }
-
-    /* Sets speed of the intake based on boolean values of Joystick triggers */
+    /**
+     * Rotates the intake with the specified speed.
+     * 
+     * @param intakeSpeed the speed at which the intake should rotate
+     */
     public void intakeRotate(double intakeSpeed) {
         m_intakeSpeed = -intakeSpeed;
+        m_intakeMotor.set(m_intakeSpeed);
     }
 
     @Override
     public void periodic() {
-        m_leftIntakeMotor.set(m_intakeSpeed);
-        
-        m_leftShooterMotor.set(m_shooterSpeed);
-        m_rightShooterMotor.set(m_shooterSpeed);
-
-        shooterSpeedEntry.setDouble(-m_shooterSpeed);
+        // Update the intake speed entry on Shuffleboard with the current speed of the intake motor
+        intakeSpeedEntry.setDouble(m_intakeSpeed);
     }
 }
