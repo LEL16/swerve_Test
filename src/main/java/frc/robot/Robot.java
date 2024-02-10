@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -21,7 +22,10 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() { m_container = new RobotContainer(); }
+  public void robotInit() { 
+    m_container = new RobotContainer(); 
+    CameraServer.startAutomaticCapture();
+}
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like

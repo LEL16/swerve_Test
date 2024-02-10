@@ -60,7 +60,6 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed
     ));
 
-    
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5, 
