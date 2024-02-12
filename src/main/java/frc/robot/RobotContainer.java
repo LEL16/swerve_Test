@@ -83,8 +83,21 @@ public class RobotContainer {
     */
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-        m_outtakeSubsystem,
-        () -> m_operatorButtonPad.getRawAxis(3)));
+    m_outtakeSubsystem,
+    () -> {
+        boolean buttonPressed = m_operatorButtonPad.getRawButton(3);
+        return buttonPressed ? 0.8 : 0.0; 
+    }));
+
+    m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
+    m_pivotSubsystem,
+    () -> {
+        boolean upButtonPressed = m_operatorButtonPad.getRawButton(7);
+        boolean downButtonPressed = m_operatorButtonPad.getRawButton(8);
+        if(upButtonPressed) return 0.7;
+        else if(downButtonPressed) return 0.7;
+        return 0;
+    }, false));
 
         
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
@@ -203,17 +216,6 @@ public class RobotContainer {
         () -> m_operatorButtonPad.getRawButton(3));
     m_pivotHighPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
     m_pivotHighPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
-
-    // Operator "higher" position with button-pad joystick
-    Trigger m_pivotUpPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(5));
-    m_pivotUpPositionButtonPad.whileTrue(new DefaultPivotCommand(m_pivotSubsystem, (-.5).getAsDouble()));
-
-    // Operator "lower" position with button-pad joystick
-    Trigger m_pivotDownPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(5));
-    m_pivotDownPositionButtonPad.whileTrue(new DefaultPivotCommand(m_pivotSubsystem, (.5).getAsDouble()));
-
    
   }
 
