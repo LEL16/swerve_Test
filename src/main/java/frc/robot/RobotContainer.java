@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -42,6 +43,8 @@ public class RobotContainer {
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
+  private final GenericHID m_operatorButtonPad = new GenericHID(2);
+
   private double m_powerLimit = 1.0;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -61,15 +64,29 @@ public class RobotContainer {
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
+    /* Controller implementation
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem,
         () -> m_operatorController.getRawButton(5),
         () -> m_operatorController.getRawButton(6)));
 
+        */
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+            m_intakeSubsystem,
+            () -> m_operatorButtonPad.getRawButton(6),
+            () -> m_operatorButtonPad.getRawButton(7)));
+
+    /* Controller implementation
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit));
+    */
 
+    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+        m_outtakeSubsystem,
+        () -> m_operatorButtonPad.getRawAxis(3)));
+
+        
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
         m_pivotSubsystem,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
@@ -165,6 +182,39 @@ public class RobotContainer {
         () -> m_operatorController.getRawButton(4));
     m_pivotHighPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
     m_pivotHighPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+
+
+    //Buttons are NOT correctly assigned currently
+
+    // Operator "low" position with button-pad button
+    Trigger m_pivotLowPositionButtonPad = new Trigger(
+        () -> m_operatorButtonPad.getRawButton(1));
+    m_pivotLowPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
+    m_pivotLowPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+
+    // Operator "mid" position with button-pad button
+    Trigger m_pivotMidPositionButtonPad = new Trigger(
+        () -> m_operatorButtonPad.getRawButton(2));
+    m_pivotMidPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
+    m_pivotMidPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+
+    // Operator "high" position with button-pad button
+    Trigger m_pivotHighPositionButtonPad = new Trigger(
+        () -> m_operatorButtonPad.getRawButton(3));
+    m_pivotHighPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
+    m_pivotHighPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+
+    // Operator "higher" position with button-pad joystick
+    Trigger m_pivotUpPositionButtonPad = new Trigger(
+        () -> m_operatorButtonPad.getRawButton(5));
+    m_pivotUpPositionButtonPad.whileTrue(new DefaultPivotCommand(m_pivotSubsystem, (-.5).getAsDouble()));
+
+    // Operator "lower" position with button-pad joystick
+    Trigger m_pivotDownPositionButtonPad = new Trigger(
+        () -> m_operatorButtonPad.getRawButton(5));
+    m_pivotDownPositionButtonPad.whileTrue(new DefaultPivotCommand(m_pivotSubsystem, (.5).getAsDouble()));
+
+   
   }
 
   public void setPose(double xPos, double yPos, double theta) {
