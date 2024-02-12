@@ -73,8 +73,8 @@ public class RobotContainer {
         */
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
             m_intakeSubsystem,
-            () -> m_operatorButtonPad.getRawButton(6),
-            () -> m_operatorButtonPad.getRawButton(7)));
+            () -> m_operatorButtonPad.getRawButton(6), //rb
+            () -> m_operatorButtonPad.getRawButton(5))); //lb
 
     /* Controller implementation
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -85,17 +85,17 @@ public class RobotContainer {
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
     m_outtakeSubsystem,
     () -> {
-        boolean buttonPressed = m_operatorButtonPad.getRawButton(3);
+        boolean buttonPressed = m_operatorButtonPad.getRawButton(4); //y
         return buttonPressed ? 0.8 : 0.0; 
     }));
 
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
     m_pivotSubsystem,
     () -> {
-        boolean upButtonPressed = m_operatorButtonPad.getRawButton(7);
-        boolean downButtonPressed = m_operatorButtonPad.getRawButton(8);
-        if(upButtonPressed) return 0.7;
-        else if(downButtonPressed) return 0.7;
+        int POVangle = m_operatorButtonPad.getPOV();
+      
+        if(POVangle == 0) return 0.7;
+        else if(POVangle == 180) return 0.7;
         return 0;
     }, () -> m_operatorButtonPad.getRawButton(9)));
 
@@ -199,21 +199,21 @@ public class RobotContainer {
 
     //Buttons are NOT correctly assigned currently
 
-    // Operator "low" position with button-pad button
+    // Operator "low" position with button-pad button "X"
     Trigger m_pivotLowPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(1));
+        () -> m_operatorButtonPad.getRawButton(3));
     m_pivotLowPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
     m_pivotLowPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator "mid" position with button-pad button
+    // Operator "mid" position with button-pad button "A"
     Trigger m_pivotMidPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(2));
+        () -> m_operatorButtonPad.getRawButton(1));
     m_pivotMidPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
     m_pivotMidPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator "high" position with button-pad button
+    // Operator "high" position with button-pad button "B"
     Trigger m_pivotHighPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(3));
+        () -> m_operatorButtonPad.getRawButton(2));
     m_pivotHighPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
     m_pivotHighPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
    
