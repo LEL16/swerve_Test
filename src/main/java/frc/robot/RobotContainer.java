@@ -97,7 +97,7 @@ public class RobotContainer {
         if(upButtonPressed) return 0.7;
         else if(downButtonPressed) return 0.7;
         return 0;
-    }, false));
+    }, () -> m_operatorButtonPad.getRawButton(9)));
 
         
     m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
