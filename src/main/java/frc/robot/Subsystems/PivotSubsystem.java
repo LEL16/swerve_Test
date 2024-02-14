@@ -23,8 +23,12 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         m_leftPivotMotor = new CANSparkMax(Constants.LEFT_PIVOT_MOTOR, MotorType.kBrushless);
         m_rightPivotMotor = new CANSparkMax(Constants.RIGHT_PIVOT_MOTOR, MotorType.kBrushless);
+        m_leftPivotMotor.restoreFactoryDefaults();
+        m_rightPivotMotor.restoreFactoryDefaults();
         m_leftPivotMotor.setIdleMode(IdleMode.kBrake);
         m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
+        m_leftPivotMotor.setSmartCurrentLimit(10);
+        m_rightPivotMotor.setSmartCurrentLimit(10);
 
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
         m_pivotEncoder.setPositionConversionFactor(1 / 3.4 * 360); // RPM to degrees
