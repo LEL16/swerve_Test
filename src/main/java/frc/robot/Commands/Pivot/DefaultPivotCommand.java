@@ -32,7 +32,7 @@ public class DefaultPivotCommand extends Command {
         if (m_pivotResetEncoders.getAsBoolean()) {
             m_pivotSubsystem.resetEncoders();
         }
-        m_pivotSubsystem.pivotRotate(m_pivotVelocitySupplier.getAsDouble() / 3);
+        m_pivotSubsystem.pivotRotate(m_pivotVelocitySupplier.getAsDouble() * 8);
     }
 
     /**

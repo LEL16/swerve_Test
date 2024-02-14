@@ -24,7 +24,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem() {
         m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
+        m_intakeMotor.restoreFactoryDefaults();
         m_intakeMotor.setIdleMode(IdleMode.kBrake);
+        m_intakeMotor.setSmartCurrentLimit(10);
+        m_intakeMotor.setInverted(true);
 
         ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
         intakeSpeedEntry = intakeTab.add("Intake Speed", 0).getEntry();
@@ -36,8 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param intakeSpeed the speed at which the intake should rotate
      */
     public void intakeRotate(double intakeSpeed) {
-        m_intakeSpeed = -intakeSpeed;
-        m_intakeMotor.set(m_intakeSpeed);
+        m_intakeMotor.setVoltage(m_intakeSpeed);
     }
 
     @Override

@@ -31,9 +31,9 @@ public class DefaultIntakeCommand extends Command {
     @Override
     public void execute() {
         if (m_intakeNoteSupplier.getAsBoolean()) {
-            m_intakeSubsystem.intakeRotate(-0.8);
+            m_intakeSubsystem.intakeRotate(-8);
         } else if (m_outtakeNoteSupplier.getAsBoolean()) {
-            m_intakeSubsystem.intakeRotate(0.3);
+            m_intakeSubsystem.intakeRotate(3);
         } else {
             m_intakeSubsystem.intakeRotate(0);
         }

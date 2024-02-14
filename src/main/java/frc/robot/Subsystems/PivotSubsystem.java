@@ -29,6 +29,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_rightPivotMotor.setIdleMode(IdleMode.kBrake);
         m_leftPivotMotor.setSmartCurrentLimit(10);
         m_rightPivotMotor.setSmartCurrentLimit(10);
+        m_rightPivotMotor.follow(m_leftPivotMotor, true);
 
         m_pivotEncoder = m_leftPivotMotor.getEncoder();
         m_pivotEncoder.setPositionConversionFactor(1 / 3.4 * 360); // RPM to degrees
@@ -56,8 +57,7 @@ public class PivotSubsystem extends SubsystemBase {
      *              rotate clockwise, negative values rotate counterclockwise.
      */
     public void pivotRotate(double speed) {
-        m_leftPivotMotor.set(speed);
-        m_rightPivotMotor.set(-speed);
+        m_leftPivotMotor.setVoltage(speed);
     }
 
     /**

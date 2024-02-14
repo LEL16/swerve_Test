@@ -26,6 +26,12 @@ public class OuttakeSubsystem extends SubsystemBase {
     public OuttakeSubsystem() {
         m_leftShooterMotor = new CANSparkMax(Constants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
         m_rightShooterMotor = new CANSparkMax(Constants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
+        m_leftShooterMotor.restoreFactoryDefaults();
+        m_rightShooterMotor.restoreFactoryDefaults();
+        m_leftShooterMotor.setSmartCurrentLimit(10);
+        m_rightShooterMotor.setSmartCurrentLimit(10);
+        m_leftShooterMotor.setInverted(true);
+        m_rightShooterMotor.follow(m_leftShooterMotor, true);
 
         m_leftShooterMotor.setIdleMode(IdleMode.kBrake);
         m_rightShooterMotor.setIdleMode(IdleMode.kBrake);
@@ -42,7 +48,7 @@ public class OuttakeSubsystem extends SubsystemBase {
      *              rotate clockwise, negative values rotate counterclockwise.
      */
     public void outtakeRotate(double speed) {
-        m_shooterSpeed = -speed * 1.25;
+        m_shooterSpeed = speed * 10;
         m_leftShooterMotor.set(m_shooterSpeed);
         m_rightShooterMotor.set(m_shooterSpeed);
     }
