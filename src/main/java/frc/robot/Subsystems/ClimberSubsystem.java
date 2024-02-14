@@ -15,8 +15,8 @@ public class ClimberSubsystem extends SubsystemBase {
     private final CANSparkMax m_rightMotor;
 
     public ClimberSubsystem(){
-        m_leftMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
-        m_rightMotor = new CANSparkMax(Constants.ROTATE_MOTOR, MotorType.kBrushless);
+        m_leftMotor = new CANSparkMax(Constants.LEFT_CLIMBER, MotorType.kBrushless);
+        m_rightMotor = new CANSparkMax(Constants.RIGHT_CLIMBER, MotorType.kBrushless);
 
         m_rightMotor.setIdleMode(IdleMode.kBrake);
         m_leftMotor.setIdleMode(IdleMode.kBrake);

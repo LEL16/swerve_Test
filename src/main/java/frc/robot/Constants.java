@@ -37,4 +37,7 @@ public final class Constants {
 
     public static final int OUTTAKE_MOTOR_1 = 60;
     public static final int OUTTAKE_MOTOR_2 = 23;
+
+    public static final int LEFT_CLIMBER = -1;
+    public static final int RIGHT_CLIMBER = -1;
 }
