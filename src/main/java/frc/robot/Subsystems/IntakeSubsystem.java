@@ -143,7 +143,6 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         updateShuffleboard();
     }
-
     /** Returns whether the intake can be activated. */
     public boolean canIntake() {
         if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
