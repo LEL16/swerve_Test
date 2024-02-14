@@ -36,7 +36,7 @@ public class RobotContainer {
   private final Joystick m_operatorController = new Joystick(1);
   private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
-  private boolean JoystickOperator = true;
+  private boolean JoystickOperator = true; //if true, operator uses a controller, otherwise the button pad 
   private double m_powerLimit = 1.0;
 
   private static final double kIntakeGearRatio = 1;
