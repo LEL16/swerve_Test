@@ -36,10 +36,10 @@ import frc.robot.Subsystems.PivotSubsystem;
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
-  private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
+  // private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
+  // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  // private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
+  // private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -71,10 +71,10 @@ public class RobotContainer {
         () -> m_operatorController.getRawButton(6)));
 
         */
-    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-            m_intakeSubsystem,
-            () -> m_operatorButtonPad.getRawButton(6), //rb
-            () -> m_operatorButtonPad.getRawButton(5))); //lb
+    // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+    //         m_intakeSubsystem,
+    //         () -> m_operatorButtonPad.getRawButton(6), //rb
+    //         () -> m_operatorButtonPad.getRawButton(5))); //lb
 
     /* Controller implementation
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -82,28 +82,28 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.01) * m_powerLimit));
     */
 
-    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-    m_outtakeSubsystem,
-    () -> {
-        boolean buttonPressed = m_operatorButtonPad.getRawButton(4); //y
-        return buttonPressed ? 0.8 : 0.0; 
-    }));
+    // m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+    // m_outtakeSubsystem,
+    // () -> {
+    //     boolean buttonPressed = m_operatorButtonPad.getRawButton(4); //y
+    //     return buttonPressed ? 0.8 : 0.0; 
+    // }));
 
-    m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
-    m_pivotSubsystem,
-    () -> {
-        int POVangle = m_operatorButtonPad.getPOV();
+    // m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
+    // m_pivotSubsystem,
+    // () -> {
+    //     int POVangle = m_operatorButtonPad.getPOV();
       
-        if(POVangle == 0) return 0.7;
-        else if(POVangle == 180) return 0.7;
-        return 0;
-    }, () -> m_operatorButtonPad.getRawButton(9)));
+    //     if(POVangle == 0) return 0.7;
+    //     else if(POVangle == 180) return 0.7;
+    //     return 0;
+    // }, () -> m_operatorButtonPad.getRawButton(9)));
 
         
-    m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
-        m_pivotSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
-        () -> m_operatorController.getRawButton(1)));
+    // m_pivotSubsystem.setDefaultCommand(new DefaultPivotCommand(
+    //     m_pivotSubsystem,
+    //     () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
+    //     () -> m_operatorController.getRawButton(1)));
 
     m_field = new Field2d();
 
@@ -120,10 +120,10 @@ public class RobotContainer {
       m_field.getObject("path").setPoses(poses);
     });
 
-    NamedCommands.registerCommand("Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.5)));
-    NamedCommands.registerCommand("Stop Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.0)));
-    NamedCommands.registerCommand("Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.5)));
-    NamedCommands.registerCommand("Stop Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.0)));
+    // NamedCommands.registerCommand("Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.5)));
+    // NamedCommands.registerCommand("Stop Shoot Note", new InstantCommand(() -> m_outtakeSubsystem.outtakeRotate(0.0)));
+    // NamedCommands.registerCommand("Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.5)));
+    // NamedCommands.registerCommand("Stop Intake Note", new InstantCommand(() -> m_intakeSubsystem.intakeRotate(0.0)));
 
     // NamedCommands.registerCommand("resetPos", new InstantCommand(() -> setPose(0,
     // 0, 0))); // Example registered command
@@ -158,15 +158,15 @@ public class RobotContainer {
     m_pathfinding.onTrue(AutoBuilder.pathfindToPose(new Pose2d(8.30, 4.10, Rotation2d.fromDegrees(90)),
         new PathConstraints(2.0, 2.0, Units.degreesToRadians(180), Units.degreesToRadians(180)), 0.0, 0.0));
 
-    // Driver button LB
-    Trigger m_limelightPathFinding = new Trigger(() -> m_driveController.getRawButton(5));
-    m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
-    m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    // // Driver button LB
+    // Trigger m_limelightPathFinding = new Trigger(() -> m_driveController.getRawButton(5));
+    // m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
+    // m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
-    // Driver button RB
-    Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
-    m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
-    m_limelightAlignment.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    // // Driver button RB
+    // Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
+    // m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    // m_limelightAlignment.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
@@ -179,43 +179,43 @@ public class RobotContainer {
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
 
     // Operator button A
-    Trigger m_pivotLowPosition = new Trigger(
-        () -> m_operatorController.getRawButton(1));
-    m_pivotLowPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
-    m_pivotLowPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // Trigger m_pivotLowPosition = new Trigger(
+    //     () -> m_operatorController.getRawButton(1));
+    // m_pivotLowPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
+    // m_pivotLowPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator button B
-    Trigger m_pivotMidPosition = new Trigger(
-        () -> m_operatorController.getRawButton(2));
-    m_pivotMidPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
-    m_pivotMidPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // // Operator button B
+    // Trigger m_pivotMidPosition = new Trigger(
+    //     () -> m_operatorController.getRawButton(2));
+    // m_pivotMidPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
+    // m_pivotMidPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator button X
-    Trigger m_pivotHighPosition = new Trigger(
-        () -> m_operatorController.getRawButton(4));
-    m_pivotHighPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
-    m_pivotHighPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // // Operator button X
+    // Trigger m_pivotHighPosition = new Trigger(
+    //     () -> m_operatorController.getRawButton(4));
+    // m_pivotHighPosition.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
+    // m_pivotHighPosition.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
 
-    //Buttons are NOT correctly assigned currently
+    // //Buttons are NOT correctly assigned currently
 
-    // Operator "low" position with button-pad button "X"
-    Trigger m_pivotLowPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(3));
-    m_pivotLowPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
-    m_pivotLowPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // // Operator "low" position with button-pad button "X"
+    // Trigger m_pivotLowPositionButtonPad = new Trigger(
+    //     () -> m_operatorButtonPad.getRawButton(3));
+    // m_pivotLowPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "low"));
+    // m_pivotLowPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator "mid" position with button-pad button "A"
-    Trigger m_pivotMidPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(1));
-    m_pivotMidPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
-    m_pivotMidPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // // Operator "mid" position with button-pad button "A"
+    // Trigger m_pivotMidPositionButtonPad = new Trigger(
+    //     () -> m_operatorButtonPad.getRawButton(1));
+    // m_pivotMidPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "mid"));
+    // m_pivotMidPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
 
-    // Operator "high" position with button-pad button "B"
-    Trigger m_pivotHighPositionButtonPad = new Trigger(
-        () -> m_operatorButtonPad.getRawButton(2));
-    m_pivotHighPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
-    m_pivotHighPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
+    // // Operator "high" position with button-pad button "B"
+    // Trigger m_pivotHighPositionButtonPad = new Trigger(
+    //     () -> m_operatorButtonPad.getRawButton(2));
+    // m_pivotHighPositionButtonPad.whileTrue(new PositionPivotCommand(m_pivotSubsystem, "high"));
+    // m_pivotHighPositionButtonPad.whileFalse(new InstantCommand(() -> m_pivotSubsystem.getCurrentCommand().cancel()));
    
   }
 
