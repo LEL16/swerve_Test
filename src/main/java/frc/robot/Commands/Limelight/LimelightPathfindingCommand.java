@@ -56,7 +56,7 @@ public class LimelightPathfindingCommand extends Command {
         if (!m_limelightSubsystem.getTagFound()) {
             m_drivetrainSubsystem.drive(0, 0, 2.5, false);
         } else {
-            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem).schedule();
+            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational").schedule();
         }
 
         tagIdEntry.setDouble(m_tagID);
