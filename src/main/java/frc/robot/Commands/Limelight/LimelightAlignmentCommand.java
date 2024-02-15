@@ -34,13 +34,14 @@ public class LimelightAlignmentCommand extends Command {
     GenericEntry trackingModeEntry;
     GenericEntry powerLimit;
 
-    public LimelightAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem) {
+    public LimelightAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem, String trackingMode) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_limelightSubsystem = limelightSubsystem;
+        m_trackingMode = trackingMode;
 
         m_xPID = new PIDController(0.5, 0, 0);
         m_yPID = new PIDController(0.5, 0, 0);
-        m_rotPID = new PIDController(0.025, 0, 0);
+        m_rotPID = new PIDController(0.05, 0, 0);
 
         ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight")
                 .getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
@@ -48,8 +49,8 @@ public class LimelightAlignmentCommand extends Command {
         xVelEntry = tagTrackingLayout.add("X Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         yVelEntry = tagTrackingLayout.add("Y Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         rotVelEntry = tagTrackingLayout.add("Rotational Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
-        trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView)
-                .getEntry();
+        // trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView)
+        //         .getEntry();
 
         powerLimit = Shuffleboard.getTab("Limelight").add("Power Limit", 1).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("min", 0, "max", 1)).getEntry();
@@ -66,7 +67,7 @@ public class LimelightAlignmentCommand extends Command {
         m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
             * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
 
-        m_trackingMode = m_limelightSubsystem.getTrackingMode();
+        // m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
 
         m_drivetrainSubsystem.drive(
@@ -78,7 +79,7 @@ public class LimelightAlignmentCommand extends Command {
         xVelEntry.setDouble(m_xVel); // Shuffleboard data
         yVelEntry.setDouble(m_yVel);
         rotVelEntry.setDouble(m_rotVel);
-        trackingModeEntry.setString(m_trackingMode);
+        // trackingModeEntry.setString(m_trackingMode);
         }
 
         @Override

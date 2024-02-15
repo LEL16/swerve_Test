@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_container = new RobotContainer();
 
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
   }
 
   /**

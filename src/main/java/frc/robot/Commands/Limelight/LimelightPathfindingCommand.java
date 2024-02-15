@@ -34,7 +34,7 @@ public class LimelightPathfindingCommand extends Command {
 
         ShuffleboardLayout limelightPathfindingLayout = Shuffleboard.getTab("Limelight")
                 .getLayout("Pathfinding", BuiltInLayouts.kList).withSize(2, 2);
-        tagIdEntry = limelightPathfindingLayout.add("Tag ID", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
+        // tagIdEntry = limelightPathfindingLayout.add("Tag ID", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         // pose2dEntry = limelightPathfindingLayout.add("Pose2d Target", new Pose2d(0,
         // 0, new Rotation2d(0))).withWidget(BuiltInWidgets.kTextView).getEntry();
 
@@ -56,10 +56,10 @@ public class LimelightPathfindingCommand extends Command {
         if (!m_limelightSubsystem.getTagFound()) {
             m_drivetrainSubsystem.drive(0, 0, 2.5, false);
         } else {
-            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem).schedule();
+            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational").schedule();
         }
 
-        tagIdEntry.setDouble(m_tagID);
+        // tagIdEntry.setDouble(m_tagID);
         pose2dEntry.setString(m_targetPose2d.toString());
     }
 
