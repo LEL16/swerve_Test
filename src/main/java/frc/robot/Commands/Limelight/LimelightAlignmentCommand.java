@@ -34,9 +34,10 @@ public class LimelightAlignmentCommand extends Command {
     GenericEntry trackingModeEntry;
     GenericEntry powerLimit;
 
-    public LimelightAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem) {
+    public LimelightAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem, String trackingMode) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_limelightSubsystem = limelightSubsystem;
+        m_trackingMode = trackingMode;
 
         m_xPID = new PIDController(0.5, 0, 0);
         m_yPID = new PIDController(0.5, 0, 0);
@@ -48,8 +49,8 @@ public class LimelightAlignmentCommand extends Command {
         xVelEntry = tagTrackingLayout.add("X Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         yVelEntry = tagTrackingLayout.add("Y Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
         rotVelEntry = tagTrackingLayout.add("Rotational Velocity", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
-        trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView)
-                .getEntry();
+        // trackingModeEntry = tagTrackingLayout.add("Tracking Mode", "Translational").withWidget(BuiltInWidgets.kTextView)
+        //         .getEntry();
 
         powerLimit = Shuffleboard.getTab("Limelight").add("Power Limit", 1).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("min", 0, "max", 1)).getEntry();

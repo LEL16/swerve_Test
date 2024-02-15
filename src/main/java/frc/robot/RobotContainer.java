@@ -135,7 +135,7 @@ public class RobotContainer {
 
     // Driver button RB
     Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
-    m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational"));
     m_limelightAlignment.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
