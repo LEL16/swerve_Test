@@ -32,7 +32,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  //private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -77,10 +77,11 @@ public class RobotContainer {
           m_outtakeSubsystem, 
           () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate 
       ));
-      m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
-        m_climberSubsystem, 
-        ()-> MathUtil.applyDeadband(m_operatorController.getRawAxis(-1), 0.05)
-      ));
+      
+      //m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
+      //  m_climberSubsystem, 
+      //  ()-> MathUtil.applyDeadband(m_operatorController.getRawAxis(-1), 0.05)
+      //));
 
 
     }
