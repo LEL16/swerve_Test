@@ -98,6 +98,7 @@ public class LimelightAlignmentCommand extends Command {
                 * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
 
         // m_trackingMode = m_limelightSubsystem.getTrackingMode();
+        // m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
 
         m_drivetrainSubsystem.drive(

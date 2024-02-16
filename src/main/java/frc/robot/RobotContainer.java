@@ -39,6 +39,9 @@ public class RobotContainer {
   // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
   // private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
+  // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  // private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
+  // private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -138,6 +141,7 @@ public class RobotContainer {
 
     // Driver button LB
     Trigger m_limelightPathFinding = new Trigger(() -> m_driveController.getRawButton(5));
+    m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 6));
     m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 6));
     m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
