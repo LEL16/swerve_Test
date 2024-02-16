@@ -21,7 +21,7 @@ public class LimelightPathfindingCommand extends Command {
     private int m_tagID;
     private Pose2d m_targetPose2d;
 
-    private GenericEntry tagIdEntry;
+    // private GenericEntry tagIdEntry;
     private GenericEntry pose2dEntry;
 
     public LimelightPathfindingCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem,
@@ -56,11 +56,8 @@ public class LimelightPathfindingCommand extends Command {
         if (!m_limelightSubsystem.getTagFound()) {
             m_drivetrainSubsystem.drive(0, 0, 2.5, false);
         } else {
-<<<<<<< HEAD
+            //new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational").schedule();
             // new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational").schedule();
-=======
-            new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational").schedule();
->>>>>>> dc9bcb7c49f4fe9ba5f077012804df468a24e20e
         }
 
         // tagIdEntry.setDouble(m_tagID);

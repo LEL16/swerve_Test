@@ -19,16 +19,16 @@ public class LimelightAlignmentCommand extends Command {
     private final LimelightSubsystem m_limelightSubsystem;
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
-    private PIDController m_xPID; // PID controller for the x-axis
-    private PIDController m_yPID; // PID controller for the y-axis
-    private PIDController m_rotPID; // PID controller for the rotation
+    private PIDController m_xPID;   // PID controller for the x-axis
+    private PIDController m_yPID;   // PID controller for the y-axis
+    private PIDController m_rotPID;     // PID controller for the rotation
 
-    private double m_xVel; // Velocity of the robot in the x-axis
-    private double m_yVel; // Velocity of the robot in the y-axis
-    private double m_rotVel; // Velocity of the robot's rotation
+    private double m_xVel;  // Velocity of the robot in the x-axis
+    private double m_yVel;  // Velocity of the robot in the y-axis
+    private double m_rotVel;    // Velocity of the robot's rotation
 
-    private String m_trackingMode; // Mode of tracking (translational or rotational)
-    private double m_distanceToTag =3; // Distance from the robot to the player
+    private String m_trackingMode;  // Mode of tracking (translational or rotational)
+    private double m_distanceToTag =3;  // Distance from the robot to the player
 
     GenericEntry xVelEntry;
     GenericEntry yVelEntry;
@@ -76,6 +76,8 @@ public class LimelightAlignmentCommand extends Command {
 
         powerLimit = Shuffleboard.getTab("Limelight").add("Power Limit", 1).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("min", 0, "max", 1)).getEntry();
+
+        
 
         addRequirements(m_drivetrainSubsystem);
     }
