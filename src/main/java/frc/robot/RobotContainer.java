@@ -52,14 +52,14 @@ public class RobotContainer {
    * the {@link Robot} class can utilize during different OpModes.
    */
   public RobotContainer() {
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-        m_drivetrainSubsystem,
-        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
-            * DrivetrainSubsystem.kMaxSpeed,
-        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
-            * DrivetrainSubsystem.kMaxSpeed,
-        () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
-            * DrivetrainSubsystem.kMaxAngularSpeed));
+    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    //     m_drivetrainSubsystem,
+    //     () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
+    //         * DrivetrainSubsystem.kMaxSpeed,
+    //     () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
+    //         * DrivetrainSubsystem.kMaxSpeed,
+    //     () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
+    //         * DrivetrainSubsystem.kMaxAngularSpeed));
 
     // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
     // m_intakeSubsystem,
@@ -141,18 +141,27 @@ public class RobotContainer {
     m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 6));
     m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
-    // Driver button RB
-    Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(4));
+    // Driver button Y
+    Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
     // m_limelightAlignment
     // .onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem,
     // m_limelightSubsystem, "rotational"));
     // m_limelightAlignment.whileFalse(new InstantCommand(() ->
     // m_drivetrainSubsystem.getCurrentCommand().cancel()));
-    m_limelightAlignment.toggleOnTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem,
+
+    m_limelightAlignment.whileTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem,
         "rotational", () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed,
         () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed));
+    m_limelightAlignment.whileFalse(new DefaultDriveCommand(
+        m_drivetrainSubsystem,
+        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
+            * DrivetrainSubsystem.kMaxSpeed,
+        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
+            * DrivetrainSubsystem.kMaxSpeed,
+        () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
+            * DrivetrainSubsystem.kMaxAngularSpeed));
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315

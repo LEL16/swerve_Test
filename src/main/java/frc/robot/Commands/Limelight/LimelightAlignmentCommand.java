@@ -28,7 +28,7 @@ public class LimelightAlignmentCommand extends Command {
     private double m_rotVel; // Velocity of the robot's rotation
 
     private String m_trackingMode; // Mode of tracking (translational or rotational)
-    private double m_distanceToTag = 2; // Distance from the robot to the player
+    private double m_distanceToTag =3; // Distance from the robot to the player
 
     GenericEntry xVelEntry;
     GenericEntry yVelEntry;
@@ -53,7 +53,7 @@ public class LimelightAlignmentCommand extends Command {
         m_yVelocity = yVel;
 
         m_xPID = new PIDController(0.5, 0, 0);
-        m_yPID = new PIDController(0.25, 0, 0);
+        m_yPID = new PIDController(0.05, 0, 0);
         m_rotPID = new PIDController(0.045, 0, 0);
 
         ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight")
@@ -82,17 +82,17 @@ public class LimelightAlignmentCommand extends Command {
 
     @Override
     public void execute() {
-        m_rotPID.setP(kPEntry.getDouble(0.045));
+        m_rotPID.setP(kPEntry.getDouble(0.05));
         m_rotPID.setI(kPEntry.getDouble(0));
-        m_rotPID.setD(kPEntry.getDouble(0));
+        m_rotPID.setD(kPEntry.getDouble(0.03));
 
         // m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
         //         * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis
-        m_yVel = MathUtil.applyDeadband(-m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag),
-                0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
+        // m_yVel = MathUtil.applyDeadband(-m_yPID.calculate(m_limelightSubsystem.getDistance("Area") - m_distanceToTag),
+        //         0.05) * 2.5 * powerLimit.getDouble(1); // Calculate the velocity of the robot in the y-axis
 
         m_xVel = m_xVelocity.getAsDouble();
-        // m_yVel = m_yVelocity.getAsDouble();
+        m_yVel = m_yVelocity.getAsDouble();
 
         m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
                 * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
@@ -101,9 +101,9 @@ public class LimelightAlignmentCommand extends Command {
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
 
         m_drivetrainSubsystem.drive(
-                m_trackingMode.equals("translational") ? m_xVel : 0,
+                m_trackingMode.equals("rotational") ? m_xVel : 0,
                 m_trackingMode.equals("rotational") ? m_yVel : 0,
-                m_trackingMode.equals("translational") ? m_rotVel : 0,
+                m_trackingMode.equals("rotational") ? m_rotVel : 0,
                 m_trackingMode.equals("rotational")); // Drives the robot based on the tracking mode selected
 
         xVelEntry.setDouble(m_xVel); // Shuffleboard data
