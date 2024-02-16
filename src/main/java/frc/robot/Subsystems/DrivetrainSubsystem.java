@@ -276,6 +276,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_driveMotor.setIdleMode(IdleMode.kBrake);
       m_turningMotor.setIdleMode(IdleMode.kBrake);
 
+      m_driveMotor.setSmartCurrentLimit(10);
+      m_turningMotor.setSmartCurrentLimit(10);
+
       m_turningMotor.setInverted(true);
 
       m_driveEncoder = m_driveMotor.getEncoder();
