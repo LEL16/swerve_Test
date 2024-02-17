@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.Commands.Climber;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,11 +19,11 @@ public class DefaultClimberCommand extends Command{
 
     @Override 
     public void execute(){
-        m_climberSubsystem.rotate(m_climberRate.getAsDouble());
+        m_climberSubsystem.climberRotate(m_climberRate.getAsDouble());
     }
    
     @Override 
     public void end(boolean interrupted){
-        m_climberSubsystem.rotate(0);
+        m_climberSubsystem.climberRotate(0);
     }
 }

@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
@@ -30,6 +31,7 @@ import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LinearActuatorSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.ClimberSubsystem;
+
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
@@ -40,9 +42,9 @@ public class RobotContainer {
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
-  private final GenericHID m_operatorButtonPad = new GenericHID(2);
+  // private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
-  private boolean JoystickOperator = true; //if true, operator uses a controller, otherwise the button pad 
+  private boolean JoystickOperator = true; // Used for testing ButtonPad.
   private double m_powerLimit = 1.0;
 
   private static final double kIntakeGearRatio = 1;
@@ -52,8 +54,7 @@ public class RobotContainer {
   public static final double kRotateAutonAngularSpeed = 5676.0 * 0.5 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private Field2d field;
-
+  private Field2d m_field;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -67,8 +68,7 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed,
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
-            * DrivetrainSubsystem.kMaxAngularSpeed
-    ));
+            * DrivetrainSubsystem.kMaxAngularSpeed));
 
     //testing the linear actuator
     m_linearActuatorSubsystem.setDefaultCommand(new LinearActuatorCommand(
@@ -126,30 +126,28 @@ public class RobotContainer {
     //   ));
     // }
 
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-    // Logging callback for current robot pose
+    m_field = new Field2d();
+
+    ShuffleboardTab autonomousTab = Shuffleboard.getTab("Autonomous");
+
+    autonomousTab.add("Field", m_field);
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.setRobotPose(pose);
+      m_field.setRobotPose(pose);
     });
-    // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.getObject("target pose").setPose(pose);
+      m_field.getObject("target pose").setPose(pose);
     });
-    // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
-      // Add what we want to do with poses
-      field.getObject("path").setPoses(poses);
+      m_field.getObject("path").setPoses(poses);
     });
 
-    autoChooser = AutoBuilder.buildAutoChooser("test"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    NamedCommands.registerCommand("Intake Note",
+        new AutonIntakeCommand(m_intakeSubsystem, kIntakeAutonRate, 2));
+    NamedCommands.registerCommand("Outtake Note",
+        new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
 
-
-    NamedCommands.registerCommand("defaultIntakeCommand", new AutonIntakeCommand(m_intakeSubsystem, kIntakeAutonRate, 2));
-    NamedCommands.registerCommand("defaultOuttakeCommand", new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
+    autonomousTab.add("Auto Chooser", autoChooser);
 
     configureButtons();
 
@@ -160,21 +158,22 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    autoChooser = AutoBuilder.buildAutoChooser("test123"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
     return autoChooser.getSelected();
   }
 
   // Currently used for testing kinematics
   // public Command autonomousCommands() {
-  //   m_powerLimit = 1.0;
-  //   // m_intakeSubsystem.reset();
-  //   return new SequentialCommandGroup(
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
-  //   );
+  // m_powerLimit = 1.0;
+  // // m_intakeSubsystem.reset();
+  // return new SequentialCommandGroup(
+  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5,
+  // Math.PI, 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI,
+  // 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5,
+  // Math.PI, 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
+  // );
   // }
 
   private void configureButtons() {
