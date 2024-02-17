@@ -34,8 +34,14 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_outtakeMotor1 = new CANSparkMax(Constants.OUTTAKE_MOTOR_1, MotorType.kBrushless);
         m_outtakeMotor2 = new CANSparkMax(Constants.OUTTAKE_MOTOR_2, MotorType.kBrushless);
 
+        m_outtakeMotor1.restoreFactoryDefaults();
+        m_outtakeMotor2.restoreFactoryDefaults();
+
         m_outtakeMotor1.setIdleMode(IdleMode.kBrake);
         m_outtakeMotor2.setIdleMode(IdleMode.kBrake);
+
+        m_outtakeMotor1.setSmartCurrentLimit(30);
+        m_outtakeMotor2.setSmartCurrentLimit(30);
 
         m_outtakeMotor1.setInverted(false);
         m_outtakeMotor2.follow(m_outtakeMotor1, false);

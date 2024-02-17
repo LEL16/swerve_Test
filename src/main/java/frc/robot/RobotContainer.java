@@ -8,23 +8,24 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.AutonIntakeCommand;
-import frc.robot.Commands.AutonOuttakeCommand;
-import frc.robot.Commands.BrakeCommand;
-import frc.robot.Commands.DefaultClimberCommand;
-import frc.robot.Commands.DefaultDriveCommand;
-import frc.robot.Commands.DefaultIntakeCommand;
-import frc.robot.Commands.DefaultOuttakeCommand;
-import frc.robot.Commands.IdleDriveCommand;
-import frc.robot.Commands.PositionDriveCommand;
+import frc.robot.Commands.Drive.BrakeCommand;
+import frc.robot.Commands.Drive.DefaultDriveCommand;
+import frc.robot.Commands.Intake.AutonIntakeCommand;
+import frc.robot.Commands.Intake.DefaultIntakeCommand;
+import frc.robot.Commands.Limelight.LimelightAlignmentCommand;
+import frc.robot.Commands.Limelight.LimelightPathfindingCommand;
+import frc.robot.Commands.Outtake.AutonOuttakeCommand;
+import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.ClimberSubsystem;
 
@@ -33,13 +34,15 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
+  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
+
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
-  private final GenericHID m_operatorButtonPad = new GenericHID(2);
+  // private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
-  private boolean JoystickOperator = true; // if true, operator uses a controller, otherwise the button pad
+  private boolean JoystickOperator = true; // Used for testing ButtonPad.
   private double m_powerLimit = 1.0;
 
   private static final double kIntakeGearRatio = 1;
@@ -49,7 +52,7 @@ public class RobotContainer {
   public static final double kRotateAutonAngularSpeed = 5676.0 * 0.5 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private Field2d field;
+  private Field2d m_field;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -63,99 +66,95 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed,
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
-            * DrivetrainSubsystem.kMaxAngularSpeed
-    ));
+            * DrivetrainSubsystem.kMaxAngularSpeed));
 
-    if(JoystickOperator == true) {
+    if (JoystickOperator == true) {
       m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-          m_intakeSubsystem, 
-          () -> m_operatorController.getRawButton(1),
-          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2,
-          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5
-      ));
+          m_intakeSubsystem,
+          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05)
+              * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2,
+          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kIntakeMaxRate
+              * 0.5,
+          () -> m_operatorController.getRawButton(6)));
 
       m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-          m_outtakeSubsystem, 
-          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.65
-      ));
-      
-      //m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
-      //  m_climberSubsystem, 
-      //  ()-> MathUtil.applyDeadband(m_operatorController.getRawAxis(-1), 0.05)
-      //));
+          m_outtakeSubsystem,
+          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate
+              * 0.65));
+
+      // m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
+      // m_climberSubsystem,
+      // ()-> MathUtil.applyDeadband(m_operatorController.getRawAxis(-1), 0.05)
+      // ));
     }
 
     // else if (JoystickOperator == false) {
-    //   m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-    //     m_intakeSubsystem,
-    //     () -> {
-    //       if (m_operatorButtonPad.getRawButton(5)) {
-    //         return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on button "lb"
-    //       }
-    //       else if (m_operatorButtonPad.getRawButton(6)) {
-    //         return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
-    //       }
-    //       return 0;
-    //     },
-    //     () -> {
-    //       int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for raising and lowering intake, use up/down for variable shooting
-    //       if (POVangle == 90){
-    //         return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
-    //       }
-    //       else if (POVangle == 270){
-    //         return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
-    //       }
-    //       return 0;            
-    //     }
+    // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+    // m_intakeSubsystem,
+    // () -> {
+    // if (m_operatorButtonPad.getRawButton(5)) {
+    // return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on
+    // button "lb"
+    // }
+    // else if (m_operatorButtonPad.getRawButton(6)) {
+    // return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
+    // }
+    // return 0;
+    // },
+    // () -> {
+    // int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for
+    // raising and lowering intake, use up/down for variable shooting
+    // if (POVangle == 90){
+    // return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
+    // }
+    // else if (POVangle == 270){
+    // return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
+    // }
+    // return 0;
+    // }
     // ));
 
     // m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-    //     m_outtakeSubsystem,
-    //     () -> {
-    //       if (m_operatorController.getRawButton(1)) {
-    //         return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
-    //       }
-    //       else if(m_operatorController.getRawButton(2)){
-    //         return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
-    //       }
-    //       return 0;
-    //     }
+    // m_outtakeSubsystem,
+    // () -> {
+    // if (m_operatorController.getRawButton(1)) {
+    // return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
+    // }
+    // else if(m_operatorController.getRawButton(2)){
+    // return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
+    // }
+    // return 0;
+    // }
     // ));
     // }
 
-  field=new Field2d();SmartDashboard.putData("Field",field);
-  // Logging callback for current robot pose
-  PathPlannerLogging.setLogCurrentPoseCallback((pose)->
+    m_field = new Field2d();
 
-  {
-    // Add what we want to do with poses
-    field.setRobotPose(pose);
-  });
-  // Logging callback for target robot pose
-  PathPlannerLogging.setLogTargetPoseCallback((pose)->
-  {
-    // Add what we want to do with poses
-    field.getObject("target pose").setPose(pose);
-  });
-  // Logging callback for the active path, this is sent as a list of poses
-  PathPlannerLogging.setLogActivePathCallback((poses)->
-  {
-    // Add what we want to do with poses
-    field.getObject("path").setPoses(poses);
-  });
+    ShuffleboardTab autonomousTab = Shuffleboard.getTab("Autonomous");
 
-  autoChooser=AutoBuilder.buildAutoChooser("test"); // Default path
-  SmartDashboard.putData("Auto Chooser",autoChooser);
+    autonomousTab.add("Field", m_field);
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      m_field.setRobotPose(pose);
+    });
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      m_field.getObject("target pose").setPose(pose);
+    });
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      m_field.getObject("path").setPoses(poses);
+    });
 
-  NamedCommands.registerCommand("defaultIntakeCommand",new AutonIntakeCommand(m_intakeSubsystem,kIntakeAutonRate,2));NamedCommands.registerCommand("defaultOuttakeCommand",new AutonOuttakeCommand(m_outtakeSubsystem,kIntakeAutonRate,2));
+    NamedCommands.registerCommand("Intake Note",
+        new AutonIntakeCommand(m_intakeSubsystem, kIntakeAutonRate, 2));
+    NamedCommands.registerCommand("Outtake Note",
+        new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
 
-  configureButtons();
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
+    autonomousTab.add("Auto Chooser", autoChooser);
 
+    configureButtons();
   }
 
   public Command getAutonomousCommand() {
-    autoChooser = AutoBuilder.buildAutoChooser("test123"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
     return autoChooser.getSelected();
   }
 
@@ -189,6 +188,16 @@ public class RobotContainer {
 
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
+
+    // Driver button LB
+    Trigger m_limelightPathFinding = new Trigger(() -> m_driveController.getRawButton(5));
+    m_limelightPathFinding.onTrue(new LimelightPathfindingCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1));
+    m_limelightPathFinding.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+
+    // Driver button RB
+    Trigger m_limelightAlignment = new Trigger(() -> m_driveController.getRawButton(6));
+    m_limelightAlignment.onTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem));
+    m_limelightAlignment.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
   }
 

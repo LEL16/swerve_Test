@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import frc.robot.Commands.DefaultOuttakeCommand;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
 
 
 public class IntakeSubsystem extends SubsystemBase {

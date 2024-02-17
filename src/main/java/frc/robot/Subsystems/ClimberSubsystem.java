@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Commands.DefaultClimberCommand;
 
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -17,11 +16,15 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem(){
         m_leftMotor = new CANSparkMax(Constants.LEFT_CLIMBER, MotorType.kBrushless);
         m_rightMotor = new CANSparkMax(Constants.RIGHT_CLIMBER, MotorType.kBrushless);
-
+        m_leftMotor.restoreFactoryDefaults();
+        m_rightMotor.restoreFactoryDefaults();
+        m_leftMotor.setSmartCurrentLimit(20);
+        m_rightMotor.setSmartCurrentLimit(20);
         m_rightMotor.setIdleMode(IdleMode.kBrake);
         m_leftMotor.setIdleMode(IdleMode.kBrake);
+        m_leftMotor.follow(m_rightMotor, true);
 
-        ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
+        ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
     }
 
     @Override
@@ -29,8 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
         
     }
 
-    public void rotate(double Speed) {
-        m_rightMotor.set(3);
-        m_leftMotor.set(-.3);
+    public void climberRotate(double Speed) {
+        m_rightMotor.setVoltage(5);
     }
 }
