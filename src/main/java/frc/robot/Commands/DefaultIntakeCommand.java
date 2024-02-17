@@ -17,8 +17,9 @@ public class DefaultIntakeCommand extends Command {
      * Command to engage the intake using joystick input.
      * 
      * @param intakeSubsystem The intake subsystem.
-     * @param outtakeRateSupplier The desired intake rate (rpm).
+     * @param outtakeRateSupplier The button for outtake.
      * @param angularSpeedSupplier The desired angle change speed (rad/s).
+     * @param intakeRateSupplier The desired intake speed.
      */
     public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, BooleanSupplier outtakeRateSupplier, DoubleSupplier angularSpeedSupplier, DoubleSupplier intakeRateSupplier) {
         this.m_intakeSubsystem = intakeSubsystem;

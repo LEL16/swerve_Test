@@ -27,18 +27,19 @@ import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.ClimberSubsystem;
+
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
-  //private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
   private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
-  private boolean JoystickOperator = true; //if true, operator uses a controller, otherwise the button pad 
+  private boolean JoystickOperator = true; // if true, operator uses a controller, otherwise the button pad
   private double m_powerLimit = 1.0;
 
   private static final double kIntakeGearRatio = 1;
@@ -49,7 +50,6 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
   private Field2d field;
-
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -69,8 +69,9 @@ public class RobotContainer {
     if(JoystickOperator == true) {
       m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
           m_intakeSubsystem, 
-          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5, 
-          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2
+          () -> m_operatorController.getRawButton(1),
+          () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2,
+          () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5
       ));
 
       m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -82,84 +83,73 @@ public class RobotContainer {
       //  m_climberSubsystem, 
       //  ()-> MathUtil.applyDeadband(m_operatorController.getRawAxis(-1), 0.05)
       //));
-
-
     }
 
-    else if (JoystickOperator == false) {
-      m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-        m_intakeSubsystem,
-        () -> {
-          if (m_operatorButtonPad.getRawButton(5)) {
-            return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on button "lb"
-          }
-          else if (m_operatorButtonPad.getRawButton(6)) {
-            return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
-          }
-          return 0;
-        },
-        () -> {
-          int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for raising and lowering intake, use up/down for variable shooting
-          if (POVangle == 90){
-            return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
-          }
-          else if (POVangle == 270){
-            return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
-          }
-          return 0;            
-        }
-    ));
+    // else if (JoystickOperator == false) {
+    //   m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+    //     m_intakeSubsystem,
+    //     () -> {
+    //       if (m_operatorButtonPad.getRawButton(5)) {
+    //         return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on button "lb"
+    //       }
+    //       else if (m_operatorButtonPad.getRawButton(6)) {
+    //         return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
+    //       }
+    //       return 0;
+    //     },
+    //     () -> {
+    //       int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for raising and lowering intake, use up/down for variable shooting
+    //       if (POVangle == 90){
+    //         return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
+    //       }
+    //       else if (POVangle == 270){
+    //         return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
+    //       }
+    //       return 0;            
+    //     }
+    // ));
 
+    // m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+    //     m_outtakeSubsystem,
+    //     () -> {
+    //       if (m_operatorController.getRawButton(1)) {
+    //         return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
+    //       }
+    //       else if(m_operatorController.getRawButton(2)){
+    //         return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
+    //       }
+    //       return 0;
+    //     }
+    // ));
+    // }
 
-    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-        m_outtakeSubsystem,
-        () -> {
-          if (m_operatorController.getRawButton(1)) {
-            return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
-          }
-          else if(m_operatorController.getRawButton(2)){
-            return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
-          }
-          return 0;
-        }
-    ));
- 
-  }
+  field=new Field2d();SmartDashboard.putData("Field",field);
+  // Logging callback for current robot pose
+  PathPlannerLogging.setLogCurrentPoseCallback((pose)->
 
-    
+  {
+    // Add what we want to do with poses
+    field.setRobotPose(pose);
+  });
+  // Logging callback for target robot pose
+  PathPlannerLogging.setLogTargetPoseCallback((pose)->
+  {
+    // Add what we want to do with poses
+    field.getObject("target pose").setPose(pose);
+  });
+  // Logging callback for the active path, this is sent as a list of poses
+  PathPlannerLogging.setLogActivePathCallback((poses)->
+  {
+    // Add what we want to do with poses
+    field.getObject("path").setPoses(poses);
+  });
 
+  autoChooser=AutoBuilder.buildAutoChooser("test"); // Default path
+  SmartDashboard.putData("Auto Chooser",autoChooser);
 
+  NamedCommands.registerCommand("defaultIntakeCommand",new AutonIntakeCommand(m_intakeSubsystem,kIntakeAutonRate,2));NamedCommands.registerCommand("defaultOuttakeCommand",new AutonOuttakeCommand(m_outtakeSubsystem,kIntakeAutonRate,2));
 
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-    // Logging callback for current robot pose
-    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.setRobotPose(pose);
-    });
-    // Logging callback for target robot pose
-    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-      // Add what we want to do with poses
-      field.getObject("target pose").setPose(pose);
-    });
-    // Logging callback for the active path, this is sent as a list of poses
-    PathPlannerLogging.setLogActivePathCallback((poses) -> {
-      // Add what we want to do with poses
-      field.getObject("path").setPoses(poses);
-    });
-
-    autoChooser = AutoBuilder.buildAutoChooser("test"); // Default path
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-
-    NamedCommands.registerCommand("defaultIntakeCommand", new AutonIntakeCommand(m_intakeSubsystem, kIntakeAutonRate, 2));
-    NamedCommands.registerCommand("defaultOuttakeCommand", new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
-
-    configureButtons();
-
-
-
-
+  configureButtons();
 
   }
 
@@ -171,14 +161,17 @@ public class RobotContainer {
 
   // Currently used for testing kinematics
   // public Command autonomousCommands() {
-  //   m_powerLimit = 1.0;
-  //   // m_intakeSubsystem.reset();
-  //   return new SequentialCommandGroup(
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5, Math.PI, 1500),
-  //     new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
-  //   );
+  // m_powerLimit = 1.0;
+  // // m_intakeSubsystem.reset();
+  // return new SequentialCommandGroup(
+  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5,
+  // Math.PI, 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI,
+  // 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5,
+  // Math.PI, 1500),
+  // new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
+  // );
   // }
 
   private void configureButtons() {
