@@ -40,4 +40,5 @@ public final class Constants {
 
     public static final int LEFT_CLIMBER = -1;
     public static final int RIGHT_CLIMBER = -1;
+    public static final int LINEAR_ACTUATOR_MOTOR = 55;
 }

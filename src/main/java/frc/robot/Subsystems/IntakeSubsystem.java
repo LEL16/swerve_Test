@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateMotor.setIdleMode(IdleMode.kBrake);
 
         m_intakeMotor.setInverted(false);
-        m_rotateMotor.setInverted(false);
+        m_rotateMotor.setInverted(true);
 
         m_intakeEncoder = m_intakeMotor.getEncoder();
         m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio);
