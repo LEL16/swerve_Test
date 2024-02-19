@@ -25,10 +25,8 @@ import frc.robot.Commands.Intake.DefaultIntakeCommand;
 import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
 import frc.robot.Commands.Drive.IdleDriveCommand;
 import frc.robot.Commands.Drive.PositionDriveCommand;
-import frc.robot.Commands.LinearActuator.LinearActuatorCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
-import frc.robot.Subsystems.LinearActuatorSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.ClimberSubsystem;
 
@@ -38,7 +36,6 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
   //private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  private final LinearActuatorSubsystem m_linearActuatorSubsystem = new LinearActuatorSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -70,12 +67,6 @@ public class RobotContainer {
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
-    //testing the linear actuator
-    m_linearActuatorSubsystem.setDefaultCommand(new LinearActuatorCommand(
-        m_linearActuatorSubsystem, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
-    ));
-
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5, 
@@ -85,7 +76,8 @@ public class RobotContainer {
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate  * .8
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate  * 0.8,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 8
     ));
   
     // else if (JoystickOperator == false) {
@@ -152,7 +144,6 @@ public class RobotContainer {
     configureButtons();
 
     CommandScheduler.getInstance().schedule(m_drivetrainSubsystem.getDefaultCommand());
-    CommandScheduler.getInstance().schedule(m_linearActuatorSubsystem.getDefaultCommand());
     CommandScheduler.getInstance().schedule(m_intakeSubsystem.getDefaultCommand());
     CommandScheduler.getInstance().schedule(m_outtakeSubsystem.getDefaultCommand());
   }
