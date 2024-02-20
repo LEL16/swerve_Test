@@ -27,7 +27,6 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private final RelativeEncoder m_shooterEncoder;
     private final RelativeEncoder m_linearActuatorEncoder;
-    private final SparkAbsoluteEncoder m_linearActuatorAbsoluteEncoder;
 
     private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00634);
     private final SimpleMotorFeedforward m_linearActuatorFeedforward = new SimpleMotorFeedforward(0, 0.00815);
@@ -62,7 +61,6 @@ public class OuttakeSubsystem extends SubsystemBase {
 
         m_shooterEncoder = m_frontShooterMotor.getEncoder();
         m_linearActuatorEncoder = m_linearActuatorMotor.getEncoder();
-        m_linearActuatorAbsoluteEncoder = m_linearActuatorMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
         m_shooterEncoder.setPositionConversionFactor(kOuttakeGearRatio);
         m_shooterEncoder.setVelocityConversionFactor(kOuttakeGearRatio);
@@ -70,8 +68,8 @@ public class OuttakeSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 1).withPosition(2, 0);
         m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_shooterEncoder.getVelocity()).getEntry();
-        m_linearActuatorPositionEntry = outtakeLayout.add("Actuator Position", m_linearActuatorAbsoluteEncoder.getPosition()).getEntry();
-        m_linearActuatorSpeedEntry = outtakeLayout.add("Speed", m_linearActuatorAbsoluteEncoder.getVelocity()).getEntry();
+        m_linearActuatorPositionEntry = outtakeLayout.add("Actuator Position", m_linearActuatorEncoder.getPosition()).getEntry();
+        m_linearActuatorSpeedEntry = outtakeLayout.add("Speed", m_linearActuatorEncoder.getVelocity()).getEntry();
     }
 
     /**
@@ -90,8 +88,8 @@ public class OuttakeSubsystem extends SubsystemBase {
     /** Displays the periodically updated outtake rate on the Shuffleboard */
     public void updateShuffleboard() {
         m_outtakeRateEntry.setDouble(m_shooterEncoder.getVelocity());
-        m_linearActuatorPositionEntry.setDouble(m_linearActuatorAbsoluteEncoder.getPosition());
-        m_linearActuatorSpeedEntry.setDouble(m_linearActuatorAbsoluteEncoder.getVelocity());
+        m_linearActuatorPositionEntry.setDouble(m_linearActuatorEncoder.getPosition());
+        m_linearActuatorSpeedEntry.setDouble(m_linearActuatorEncoder.getVelocity());
     }
 
     @Override

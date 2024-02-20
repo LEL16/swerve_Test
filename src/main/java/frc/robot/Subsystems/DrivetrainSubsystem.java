@@ -4,18 +4,35 @@
 
 package frc.robot.Subsystems;
 
-//import ;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -35,18 +52,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-/** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
   private static final double kTrackWidth = 0.60; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kDriveGearRatio * SwerveModule.kWheelRadius * 2
       * Math.PI; // meters per second
-  public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians
-                                                                                                              // per
-                                                                                                              // second
+  public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // Radians
+                                                                                                              // per sec
 
   private static final Translation2d m_frontLeftLocation = new Translation2d(kTrackWidth / 2.0, kTrackWidth / 2.0);
   private static final Translation2d m_frontRightLocation = new Translation2d(kTrackWidth / 2.0, -kTrackWidth / 2.0);
@@ -82,6 +96,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private boolean m_fieldRelative;
 
   private Field2d m_field = new Field2d();
+
+  private final MutableMeasure<Voltage> m_appliedVoltage;
+  private final MutableMeasure<Distance> m_distance;
+  private final MutableMeasure<Velocity<Distance>> m_velocity;
+
+  private final SysIdRoutine m_sysIdRoutine;
 
   public DrivetrainSubsystem() {
     m_frontLeft = new SwerveModule(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR, Constants.FRONT_LEFT_MODULE_STEER_MOTOR,
@@ -137,26 +157,78 @@ public class DrivetrainSubsystem extends SubsystemBase {
     tab.add(m_field);
 
     AutoBuilder.configureHolonomic(
-      () -> new Pose2d(this.getPosition(), this.getAngle()),
-      (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),
-      () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
-      (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond, chassisSpeed.omegaRadiansPerSecond, false),
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(0, 0.0, 0.0), // Translational
-        new PIDConstants(0.5, 0.0, 0.01), // Rotational
-        3.81,
-        kTrackWidth,
-        new ReplanningConfig()
-      ),
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      },
-      this
-    );
+        () -> new Pose2d(this.getPosition(), this.getAngle()),
+        (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),
+        () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
+        (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond,
+            chassisSpeed.omegaRadiansPerSecond, false),
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(Constants.DRIVE_KP, Constants.DRIVE_KI, Constants.DRIVE_KD), // Translational
+            new PIDConstants(Constants.STEER_KP, Constants.STEER_KI, Constants.STEER_KD), // Rotational
+            3.81,
+            kTrackWidth,
+            new ReplanningConfig()),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Blue;
+          }
+          return false;
+        },
+        this);
+
+    m_appliedVoltage = mutable(Volts.of(0));
+    m_distance = mutable(Meters.of(0));
+    m_velocity = mutable(MetersPerSecond.of(0));
+
+    m_sysIdRoutine = new SysIdRoutine(
+        // Empty congif = 1 volt/second ramp rate and 7 volt step voltage
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            // Plumb the voltage into the drive motors
+            (Measure<Voltage> volts) -> {
+              m_frontLeft.getDriveMotor().setVoltage(volts.in(Volts));
+              m_frontRight.getDriveMotor().setVoltage(volts.in(Volts));
+              m_backLeft.getDriveMotor().setVoltage(volts.in(Volts));
+              m_backRight.getDriveMotor().setVoltage(volts.in(Volts));
+            },
+            // Record frames of data for each motor on the drive mechanism
+            log -> {
+              // Record a frame for the front-left motor
+              log.motor("front-left")
+                  .voltage(
+                      m_appliedVoltage.mut_replace(
+                          m_frontLeft.getDriveMotor().get() * RobotController.getBatteryVoltage(), Volts))
+                  .linearPosition(m_distance.mut_replace(m_frontLeft.getDrivePosition().distanceMeters, Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(m_frontLeft.getState().speedMetersPerSecond, MetersPerSecond));
+              // Record a frame for the front-right motor
+              log.motor("front-right")
+                  .voltage(
+                      m_appliedVoltage.mut_replace(
+                          m_frontRight.getDriveMotor().get() * RobotController.getBatteryVoltage(), Volts))
+                  .linearPosition(m_distance.mut_replace(m_frontRight.getDrivePosition().distanceMeters, Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(m_frontRight.getState().speedMetersPerSecond, MetersPerSecond));
+              // Record a frame for the back-left motor
+              log.motor("back-left")
+                  .voltage(
+                      m_appliedVoltage.mut_replace(
+                          m_backLeft.getDriveMotor().get() * RobotController.getBatteryVoltage(), Volts))
+                  .linearPosition(m_distance.mut_replace(m_backLeft.getDrivePosition().distanceMeters, Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(m_backLeft.getState().speedMetersPerSecond, MetersPerSecond));
+              // Record a frame for the back-right motor
+              log.motor("back-right")
+                  .voltage(
+                      m_appliedVoltage.mut_replace(
+                          m_backRight.getDriveMotor().get() * RobotController.getBatteryVoltage(), Volts))
+                  .linearPosition(m_distance.mut_replace(m_backRight.getDrivePosition().distanceMeters, Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(m_backRight.getState().speedMetersPerSecond, MetersPerSecond));
+            },
+            // Require this subsystem
+            this));
   }
 
   /**
@@ -231,6 +303,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     };
   }
 
+
+  /**
+   * Returns a command that will execute a quasistatic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+  }
+
+  /**
+   * Returns a command that will execute a dynamic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
+  }
+
   /** Displays the periodically updated robot poses on the Shuffleboard */
   public void updateShuffleboard() {
     m_frontLeftDriveSpeedEntry.setDouble(m_frontLeft.getState().speedMetersPerSecond);
@@ -270,7 +361,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   private class SwerveModule {
-    private static final double kWheelRadius = 0.050165; // meters
+    private static final double kWheelRadius = 0.050165; // Meters
     private static final double kDriveGearRatio = (16.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
     private static final double kSteerGearRatio = 7.0 / 150.0;
 
@@ -282,9 +373,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final RelativeEncoder m_turningMotorEncoder;
     private final double m_moduleOffset;
 
-    private final PIDController m_drivePIDController = new PIDController(0, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(0.5, 0, 0.01);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 2.13383);
+    private final PIDController m_drivePIDController = new PIDController(Constants.DRIVE_KP, Constants.DRIVE_KI,
+        Constants.DRIVE_KD);
+    private final PIDController m_turningPIDController = new PIDController(Constants.STEER_KP, Constants.STEER_KI,
+        Constants.STEER_KD);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 2.13383); // V,
+                                                                                                            // V/(m/s);
+                                                                                                            // adjust
+                                                                                                            // using
+                                                                                                            // SysId
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder
@@ -315,11 +412,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_turningCANcoder = new CANcoder(turningEncoderChannel);
       m_turningMotorEncoder = m_turningMotor.getEncoder();
 
-      m_driveEncoder.setPositionConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI); // meters
-      m_driveEncoder.setVelocityConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // meters per
+      m_driveEncoder.setPositionConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI); // Meters
+      m_driveEncoder.setVelocityConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // Meters per
                                                                                                        // second
-      m_turningMotorEncoder.setPositionConversionFactor(kSteerGearRatio * 2 * Math.PI); // radians
-      m_turningMotorEncoder.setVelocityConversionFactor(kSteerGearRatio * 2 * Math.PI / 60.0); // radians per second
+      m_turningMotorEncoder.setPositionConversionFactor(kSteerGearRatio * 2 * Math.PI); // Radians
+      m_turningMotorEncoder.setVelocityConversionFactor(kSteerGearRatio * 2 * Math.PI / 60.0); // Radians per second
 
       m_moduleOffset = moduleOffset;
 
@@ -348,6 +445,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public SwerveModulePosition getDrivePosition() {
       return new SwerveModulePosition(m_driveEncoder.getPosition(),
           Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
+    }
+
+    /**
+     * Returns the drive motor of the module.
+     *
+     * @return The drive motor of the module.
+     */
+    public CANSparkMax getDriveMotor() {
+      return this.m_driveMotor;
     }
 
     /**

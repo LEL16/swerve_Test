@@ -29,6 +29,14 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 51;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -154.7 / 360.0; // Input between -180 and 180 degrees.
 
+    public static final double DRIVE_KP = 0.1;
+    public static final double DRIVE_KI = 0.0;
+    public static final double DRIVE_KD = 0.0;
+
+    public static final double STEER_KP = 0.1;
+    public static final double STEER_KI = 0.0;
+    public static final double STEER_KD = 0.0;
+
     public static final int INTAKE_MOTOR = 32;
     public static final int ROTATE_MOTOR = 60;
 
