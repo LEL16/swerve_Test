@@ -377,7 +377,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         Constants.DRIVE_KD);
     private final PIDController m_turningPIDController = new PIDController(Constants.STEER_KP, Constants.STEER_KI,
         Constants.STEER_KD);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 2.13383); // V,
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0, 0); // V,
                                                                                                             // V/(m/s);
                                                                                                             // adjust
                                                                                                             // using

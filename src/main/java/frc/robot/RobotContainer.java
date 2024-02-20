@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.Intake.AutonIntakeCommand;
 import frc.robot.Commands.Outtake.AutonOuttakeCommand;
 import frc.robot.Commands.Drive.BrakeCommand;
@@ -35,10 +36,12 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
-  //private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
+  private final Joystick m_testController = new Joystick(2);
+
   // private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
   private boolean JoystickOperator = true; // Used for testing ButtonPad.
@@ -68,54 +71,55 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed));
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-        m_intakeSubsystem, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15,
-        () -> m_operatorController.getRawButton(3)
-    ));
+        m_intakeSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed
+            * 0.15,
+        () -> m_operatorController.getRawButton(3)));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-        m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate  * 0.8,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 8
-    ));
-  
+        m_outtakeSubsystem,
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.8,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 8));
+
     // else if (JoystickOperator == false) {
-    //   m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-    //     m_intakeSubsystem,
-    //     () -> {
-    //       if (m_operatorButtonPad.getRawButton(5)) {
-    //         return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on button "lb"
-    //       }
-    //       else if (m_operatorButtonPad.getRawButton(6)) {
-    //         return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
-    //       }
-    //       return 0;
-    //     },
-    //     () -> {
-    //       int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for raising and lowering intake, use up/down for variable shooting
-    //       if (POVangle == 90){
-    //         return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
-    //       }
-    //       else if (POVangle == 270){
-    //         return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
-    //       }
-    //       return 0;            
-    //     },
-    //     () -> m_operatorController.getRawButton(3)
-    //   ));
-    //   m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-    //       m_outtakeSubsystem,
-    //       () -> {
-    //         if (m_operatorController.getRawButton(1)) {
-    //           return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
-    //         }
-    //         else if(m_operatorController.getRawButton(2)){
-    //           return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
-    //         }
-    //         return 0;
-    //       }
-    //   ));
+    // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+    // m_intakeSubsystem,
+    // () -> {
+    // if (m_operatorButtonPad.getRawButton(5)) {
+    // return -1 * IntakeSubsystem.kIntakeMaxRate * 0.5; // counterclockwise on
+    // button "lb"
+    // }
+    // else if (m_operatorButtonPad.getRawButton(6)) {
+    // return IntakeSubsystem.kIntakeMaxRate * 0.5; // clockwise on button "rb"
+    // }
+    // return 0;
+    // },
+    // () -> {
+    // int POVangle = m_operatorButtonPad.getPOV(); // use POV left/right for
+    // raising and lowering intake, use up/down for variable shooting
+    // if (POVangle == 90){
+    // return IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // right POV
+    // }
+    // else if (POVangle == 270){
+    // return -1 * IntakeSubsystem.kRotateMaxAngularSpeed * 0.2; // left POV
+    // }
+    // return 0;
+    // },
+    // () -> m_operatorController.getRawButton(3)
+    // ));
+    // m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+    // m_outtakeSubsystem,
+    // () -> {
+    // if (m_operatorController.getRawButton(1)) {
+    // return OuttakeSubsystem.kOuttakeMaxRate; // button "a"
+    // }
+    // else if(m_operatorController.getRawButton(2)){
+    // return -1 * OuttakeSubsystem.kOuttakeMaxRate; // button "b"
+    // }
+    // return 0;
+    // }
+    // ));
     // }
 
     m_field = new Field2d();
@@ -183,18 +187,23 @@ public class RobotContainer {
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
 
-    
-    // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-    //       m_intakeSubsystem, 
-    //       () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5, 
-    //       () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15,
-    //       () -> m_operatorController.getRawButton(3)
-    //   ));
+    // Bind full set of SysId routine tests to buttons
+    // A complete routine should run each of these once
+    // Test Button A
+    Trigger m_quasiForward = new Trigger(() -> m_testController.getRawButton(1));
+    m_quasiForward.onTrue(m_drivetrainSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
 
-    // m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-    //     m_outtakeSubsystem, 
-    //     () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate  * .4
-    // ));
+    // Test Button B
+    Trigger m_quasiReverse = new Trigger(() -> m_testController.getRawButton(2));
+    m_quasiReverse.onTrue(m_drivetrainSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+    // Test Button X
+    Trigger m_dynamicForward = new Trigger(() -> m_testController.getRawButton(3));
+    m_dynamicForward.onTrue(m_drivetrainSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+
+    // Test Button Y
+    Trigger m_dynamicReverse = new Trigger(() -> m_testController.getRawButton(4));
+    m_dynamicReverse.onTrue(m_drivetrainSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   public void setPose(double xPos, double yPos, double theta) {
