@@ -6,6 +6,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,11 +25,14 @@ import frc.robot.Commands.Drive.BrakeCommand;
 import frc.robot.Commands.Climber.DefaultClimberCommand;
 import frc.robot.Commands.Drive.DefaultDriveCommand;
 import frc.robot.Commands.Intake.DefaultIntakeCommand;
+import frc.robot.Commands.Limelight.LimelightAlignmentCommand;
+import frc.robot.Commands.Limelight.PoseAlignmentCommand;
 import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
 import frc.robot.Commands.Drive.IdleDriveCommand;
 import frc.robot.Commands.Drive.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 import frc.robot.Subsystems.ClimberSubsystem;
 
@@ -36,6 +41,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
+  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
@@ -204,6 +210,21 @@ public class RobotContainer {
     // Test Button Y
     Trigger m_dynamicReverse = new Trigger(() -> m_testController.getRawButton(4));
     m_dynamicReverse.onTrue(m_drivetrainSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Driver Button LB
+    Trigger m_limelightRotationalAlignment = new Trigger(() -> m_driveController.getRawButton(6));
+    m_limelightRotationalAlignment.whileTrue(new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem,
+        "rotational",
+        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
+            * DrivetrainSubsystem.kMaxSpeed,
+        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
+            * DrivetrainSubsystem.kMaxSpeed));
+
+    // Driver Button RB
+    Trigger m_poseRotationalAlignment = new Trigger(() -> m_driveController.getRawButton(5));
+    m_poseRotationalAlignment.whileTrue(new PoseAlignmentCommand(m_drivetrainSubsystem,
+        () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()),
+        new Pose2d(0, 5.50, new Rotation2d(0))));
   }
 
   public void setPose(double xPos, double yPos, double theta) {

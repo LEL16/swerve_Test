@@ -47,8 +47,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private double m_intakeRate;
     private double m_angularSpeed;
 
-    
-
     public IntakeSubsystem() {
         m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
         m_rotateMotor = new CANSparkMax(Constants.ROTATE_MOTOR, MotorType.kBrushless);
@@ -82,9 +80,6 @@ public class IntakeSubsystem extends SubsystemBase {
         m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", m_beamBreakSensor.get()).getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
-
-
-
     }
 
     /**

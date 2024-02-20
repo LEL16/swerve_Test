@@ -33,7 +33,6 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private final GenericEntry m_outtakeRateEntry;
     private final GenericEntry m_linearActuatorPositionEntry;
-    private final GenericEntry m_linearActuatorSpeedEntry;
 
     private double m_outtakeRate;
     private double m_actuatorRate;
@@ -68,8 +67,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 1).withPosition(2, 0);
         m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_shooterEncoder.getVelocity()).getEntry();
-        m_linearActuatorPositionEntry = outtakeLayout.add("Actuator Position", m_linearActuatorEncoder.getPosition()).getEntry();
-        m_linearActuatorSpeedEntry = outtakeLayout.add("Speed", m_linearActuatorEncoder.getVelocity()).getEntry();
+        m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", m_linearActuatorEncoder.getPosition()).getEntry();
     }
 
     /**
@@ -89,7 +87,6 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void updateShuffleboard() {
         m_outtakeRateEntry.setDouble(m_shooterEncoder.getVelocity());
         m_linearActuatorPositionEntry.setDouble(m_linearActuatorEncoder.getPosition());
-        m_linearActuatorSpeedEntry.setDouble(m_linearActuatorEncoder.getVelocity());
     }
 
     @Override
