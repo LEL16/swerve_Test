@@ -2,14 +2,12 @@ package frc.robot.Subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -19,55 +17,45 @@ import frc.robot.Constants;
 
 public class OuttakeSubsystem extends SubsystemBase {
     private static final double kOuttakeGearRatio = (1.0 / 3.0);
-    public static final double kOuttakeMaxRate = 5676.0 * kOuttakeGearRatio; // RPM
+    public static final double kOuttakeMaxRate = 5676.0 * kOuttakeGearRatio; // rpm
 
-    private final CANSparkMax m_frontShooterMotor;
-    private final CANSparkMax m_backShooterMotor;
-    private final CANSparkMax m_linearActuatorMotor;
+    private final CANSparkMax m_outtakeMotor1;
+    private final CANSparkMax m_outtakeMotor2;
+    private final CANSparkMax m_linearActuator;
 
-    private final RelativeEncoder m_shooterEncoder;
-    private final RelativeEncoder m_linearActuatorEncoder;
+    private final RelativeEncoder m_outtakeEncoder;
+    private final DutyCycleEncoder m_rotateEncoder;
 
     private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00634);
-    private final SimpleMotorFeedforward m_linearActuatorFeedforward = new SimpleMotorFeedforward(0, 0.00815);
 
     private final GenericEntry m_outtakeRateEntry;
     private final GenericEntry m_linearActuatorPositionEntry;
 
     private double m_outtakeRate;
-    private double m_actuatorRate;
+    private double m_actuatorPower;
 
     public OuttakeSubsystem() {
-        m_frontShooterMotor = new CANSparkMax(Constants.OUTTAKE_MOTOR_1, MotorType.kBrushless);
-        m_backShooterMotor = new CANSparkMax(Constants.OUTTAKE_MOTOR_2, MotorType.kBrushless);
-        m_linearActuatorMotor = new CANSparkMax(Constants.LINEAR_ACTUATOR_MOTOR, MotorType.kBrushless);
+        m_outtakeMotor1 = new CANSparkMax(Constants.OUTTAKE_MOTOR_1, MotorType.kBrushless);
+        m_outtakeMotor2 = new CANSparkMax(Constants.OUTTAKE_MOTOR_2, MotorType.kBrushless);
+        m_linearActuator = new CANSparkMax(Constants.LINEAR_ACTUATOR, MotorType.kBrushed);
 
-        m_frontShooterMotor.restoreFactoryDefaults();
-        m_backShooterMotor.restoreFactoryDefaults();
-        m_linearActuatorMotor.restoreFactoryDefaults();
+        m_outtakeMotor1.setIdleMode(IdleMode.kCoast);
+        m_outtakeMotor2.setIdleMode(IdleMode.kCoast);
+        m_linearActuator.setIdleMode(IdleMode.kBrake);
 
-        m_frontShooterMotor.setIdleMode(IdleMode.kBrake);
-        m_backShooterMotor.setIdleMode(IdleMode.kBrake);
-        m_linearActuatorMotor.setIdleMode(IdleMode.kBrake);
+        m_outtakeMotor1.setInverted(false);
+        m_outtakeMotor2.follow(m_outtakeMotor1, false);
+        m_linearActuator.setInverted(true);
 
-        m_frontShooterMotor.setSmartCurrentLimit(30);
-        m_backShooterMotor.setSmartCurrentLimit(30);
-        m_linearActuatorMotor.setSmartCurrentLimit(30);
-
-        m_frontShooterMotor.setInverted(false);
-        m_backShooterMotor.follow(m_frontShooterMotor, false);
-        m_linearActuatorMotor.setInverted(false);
-
-        m_shooterEncoder = m_frontShooterMotor.getEncoder();
-        m_linearActuatorEncoder = m_linearActuatorMotor.getEncoder();
-
-        m_shooterEncoder.setPositionConversionFactor(kOuttakeGearRatio);
-        m_shooterEncoder.setVelocityConversionFactor(kOuttakeGearRatio);
+        m_outtakeEncoder = m_outtakeMotor1.getEncoder();
+        m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio); // rpm
+        m_outtakeEncoder.setVelocityConversionFactor(kOuttakeGearRatio); // rpm
+        m_rotateEncoder = new DutyCycleEncoder(Constants.OUTTAKE_ROTATE_ENCODER);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
-        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 1).withPosition(2, 0);
-        m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_shooterEncoder.getVelocity()).getEntry();
-        m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", m_linearActuatorEncoder.getPosition()).getEntry();
+        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
+        m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_outtakeEncoder.getVelocity() + " rpm").getEntry();
+        m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", getAngle() + " rad").getEntry();
     }
 
     /**
@@ -79,20 +67,34 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_outtakeRate = outtakeRate;
     }
 
-    public void actuate(double actuateRate) {
-        m_actuatorRate = actuateRate;
+    /**
+     * Engages the actuator to rotate the outtake.
+     * 
+     * @param actuatorPower Linear actuator power [-1.0, 1.0].
+     */
+    public void rotate(double actuatorPower) {
+        m_actuatorPower = actuatorPower;
+    }
+
+    /**
+     * Returns the current angle of the outtake.
+     * 
+     * @return Angle of the outtake (rad).
+     */
+    public double getAngle() {
+        return -2 * Math.PI * m_rotateEncoder.getAbsolutePosition();
     }
 
     /** Displays the periodically updated outtake rate on the Shuffleboard */
     public void updateShuffleboard() {
-        m_outtakeRateEntry.setDouble(m_shooterEncoder.getVelocity());
-        m_linearActuatorPositionEntry.setDouble(m_linearActuatorEncoder.getPosition());
+        m_outtakeRateEntry.setString(m_outtakeEncoder.getVelocity() + " rpm");
+        m_linearActuatorPositionEntry.setString(getAngle() + " rad");
     }
 
     @Override
     public void periodic() {
-        m_frontShooterMotor.setVoltage(m_outtakeFeedforward.calculate(m_outtakeRate));
-        m_linearActuatorMotor.setVoltage(m_linearActuatorFeedforward.calculate(m_actuatorRate));
+        m_outtakeMotor1.setVoltage(m_outtakeFeedforward.calculate(m_outtakeRate));
+        m_linearActuator.set(m_actuatorPower);
         updateShuffleboard();
     }
 }

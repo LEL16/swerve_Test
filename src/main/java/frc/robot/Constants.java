@@ -29,25 +29,22 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 51;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -154.7 / 360.0; // Input between -180 and 180 degrees.
 
-    public static final double DRIVE_KP = 0.1;
-    public static final double DRIVE_KI = 0.0;
-    public static final double DRIVE_KD = 0.0;
+    public static final int INTAKE_MOTOR = 24;
+    public static final int ROTATE_MOTOR = 41;
+    public static final int BEAM_BREAK_SENSOR = 7;
+    public static final int LOW_LIMIT_SWITCH = 4;
+    public static final int HIGH_LIMIT_SWITCH = 6;
 
-    public static final double STEER_KP = 0.1;
-    public static final double STEER_KI = 0.0;
-    public static final double STEER_KD = 0.0;
-
-    public static final int INTAKE_MOTOR = 32;
-    public static final int ROTATE_MOTOR = 60;
-
-    public static final int BEAM_BREAK_SENSOR = 28;
-    public static final int LOW_LIMIT_SWITCH = 29;
-    public static final int HIGH_LIMIT_SWITCH = 30;
-
-    public static final int OUTTAKE_MOTOR_1 = 33;
+    public static final int OUTTAKE_MOTOR_1 = 60;
     public static final int OUTTAKE_MOTOR_2 = 23;
+    public static final int LINEAR_ACTUATOR = 55;
+    public static final int OUTTAKE_ROTATE_ENCODER = 9;
 
-    public static final int LEFT_CLIMBER = -1;
-    public static final int RIGHT_CLIMBER = -1;
-    public static final int LINEAR_ACTUATOR_MOTOR = 55;
+    public static final double DRIVE_KP = 0;
+    public static final double DRIVE_KI = 0;
+    public static final double DRIVE_KD = 0;
+
+    public static final double STEER_KP = 0.5;
+    public static final double STEER_KI = 0;
+    public static final double STEER_KD = 0.01;
 }

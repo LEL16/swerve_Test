@@ -18,11 +18,9 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
     private static final double kIntakeGearRatio = (1.0 / 4.0);
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
-    public static final double kIntakeAutonRate = 5676.0 * kIntakeGearRatio * 0.5; // rpm
 
     private static final double kRotateGearRatio = (1.0 / 20.0) * (60.0 / 64.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
-    public static final double kRotateAutonAngularSpeed = 5676.0 * 0.5 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
     private final CANSparkMax m_intakeMotor;
     private final CANSparkMax m_rotateMotor;
@@ -35,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput m_highLimitSwitch;
 
     private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
-    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.43069);
+    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.43);
 
     private final GenericEntry m_intakeRateEntry;
     private final GenericEntry m_rotateAngleEntry;
@@ -58,12 +56,12 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateMotor.setInverted(true);
 
         m_intakeEncoder = m_intakeMotor.getEncoder();
-        m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio);
-        m_intakeEncoder.setVelocityConversionFactor(kIntakeGearRatio);
+        m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio); // rot
+        m_intakeEncoder.setVelocityConversionFactor(kIntakeGearRatio); // rpm
 
         m_rotateEncoder = m_rotateMotor.getEncoder();
-        m_rotateEncoder.setPositionConversionFactor(kRotateGearRatio * 2.0 * Math.PI);
-        m_rotateEncoder.setVelocityConversionFactor(kRotateGearRatio * 2.0 * Math.PI / 60);
+        m_rotateEncoder.setPositionConversionFactor(kRotateGearRatio * 2.0 * Math.PI); // rad
+        m_rotateEncoder.setVelocityConversionFactor(kRotateGearRatio * 2.0 * Math.PI / 60); // rad/s
 
         m_beamBreakSensor = new DigitalInput(Constants.BEAM_BREAK_SENSOR);
         m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
@@ -71,12 +69,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
-        
-        
-        m_intakeRateEntry = intakeLayout.add("Intake Rate", m_intakeEncoder.getVelocity()).getEntry();
-        m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition()).getEntry();
-        m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity()).getEntry();
-
+        m_intakeRateEntry = intakeLayout.add("Intake Rate", m_intakeEncoder.getVelocity() + " rpm").getEntry();
+        m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition() + " rad").getEntry();
+        m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
         m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", m_beamBreakSensor.get()).getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
@@ -112,9 +107,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Displays the periodically updated intake rate on the Shuffleboard */
     public void updateShuffleboard() {
-        m_intakeRateEntry.setDouble(m_intakeEncoder.getVelocity());
-        m_rotateAngleEntry.setDouble(m_rotateEncoder.getPosition());
-        m_rotateAngularSpeedEntry.setDouble(m_rotateEncoder.getVelocity());
+        m_intakeRateEntry.setString(m_intakeEncoder.getVelocity() + " rpm");
+        m_rotateAngleEntry.setString(m_rotateEncoder.getPosition() + " rad");
+        m_rotateAngularSpeedEntry.setString(m_rotateEncoder.getVelocity() + " rad/s");
         m_beamBreakSensorEntry.setBoolean(m_beamBreakSensor.get());
         m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
         m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());
@@ -134,21 +129,24 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         updateShuffleboard();
     }
+
     /** Returns whether the intake can be activated. */
     public boolean canIntake() {
+        /*
         if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
-            return true;
+            return false;
         }
+        */
         return true;
     }
 
     /** Returns whether the intake can rotate. */
     public boolean canRotate() {
         if (m_angularSpeed > 0 && !m_highLimitSwitch.get()) {
-            return true;
+            return false;
         }
         if (m_angularSpeed < 0 && !m_lowLimitSwitch.get()) {
-            return true;
+            return false;
         }
         return true;
     }

@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.Intake.AutonIntakeCommand;
 import frc.robot.Commands.Outtake.AutonOuttakeCommand;
 import frc.robot.Commands.Drive.BrakeCommand;
-import frc.robot.Commands.Climber.DefaultClimberCommand;
+// import frc.robot.Commands.Climber.DefaultClimberCommand;
 import frc.robot.Commands.Drive.DefaultDriveCommand;
 import frc.robot.Commands.Intake.DefaultIntakeCommand;
 import frc.robot.Commands.Limelight.LimelightAlignmentCommand;
@@ -34,7 +34,6 @@ import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
-import frc.robot.Subsystems.ClimberSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
@@ -73,20 +72,21 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxSpeed,
         () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
             * DrivetrainSubsystem.kMaxSpeed,
-        () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
-            * DrivetrainSubsystem.kMaxAngularSpeed));
+        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) * m_powerLimit
+            * DrivetrainSubsystem.kMaxAngularSpeed * 0.5
+    ));
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-        m_intakeSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(2), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.5,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed
-            * 0.15,
-        () -> m_operatorController.getRawButton(3)));
+        m_intakeSubsystem, 
+        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.1
+    ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-        m_outtakeSubsystem,
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.8,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 8));
+        m_outtakeSubsystem, 
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
+    ));
 
     // else if (JoystickOperator == false) {
     // m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
