@@ -14,19 +14,43 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake Note"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Default"
+            "name": "Intake Note (Low Position)"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Outtake Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Note From Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Note (Spin Wheels)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Note (Low Position)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Note From Intake"
           }
         }
       ]

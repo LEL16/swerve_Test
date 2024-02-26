@@ -144,10 +144,11 @@ public class RobotContainer {
       m_field.getObject("path").setPoses(poses);
     });
 
-    NamedCommands.registerCommand("Intake Note (Low Position)", new AutonIntakeCommand(m_intakeSubsystem, -150, -2.80, 1000));
-    NamedCommands.registerCommand("Intake Note (Spin Wheels)", new AutonIntakeCommand(m_intakeSubsystem, 150, 750));
+    NamedCommands.registerCommand("Intake Note (Low Position)", new AutonIntakeCommand(m_intakeSubsystem, -150, 2.80, 2500));
+    NamedCommands.registerCommand("Outtake Note From Intake", new AutonIntakeCommand(m_intakeSubsystem, 400, 2.80,700));
+    NamedCommands.registerCommand("Intake Note (Spin Wheels)", new AutonIntakeCommand(m_intakeSubsystem, -400, 700));
     NamedCommands.registerCommand("Wait Command", new WaitCommand(0.5));
-    NamedCommands.registerCommand("Outtake Note", new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
+    NamedCommands.registerCommand("Outtake Note", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -2.948,700));
       
     autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     autonomousTab.add("Auto Chooser", autoChooser);
