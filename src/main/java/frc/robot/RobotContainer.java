@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.Intake.AutonIntakeCommand;
@@ -84,7 +85,7 @@ public class RobotContainer {
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.034 * 3,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
@@ -143,11 +144,11 @@ public class RobotContainer {
       m_field.getObject("path").setPoses(poses);
     });
 
-    NamedCommands.registerCommand("Intake Note",
-        new AutonIntakeCommand(m_intakeSubsystem, kIntakeAutonRate, 2));
-    NamedCommands.registerCommand("Outtake Note",
-        new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
-
+    NamedCommands.registerCommand("Intake Note (Low Position)", new AutonIntakeCommand(m_intakeSubsystem, -150, -2.80, 1000));
+    NamedCommands.registerCommand("Intake Note (Spin Wheels)", new AutonIntakeCommand(m_intakeSubsystem, 150, 750));
+    NamedCommands.registerCommand("Wait Command", new WaitCommand(0.5));
+    NamedCommands.registerCommand("Outtake Note", new AutonOuttakeCommand(m_outtakeSubsystem, kIntakeAutonRate, 2));
+      
     autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     autonomousTab.add("Auto Chooser", autoChooser);
 
@@ -187,13 +188,16 @@ public class RobotContainer {
     m_brake.onTrue(new BrakeCommand(m_drivetrainSubsystem));
     m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
+    // Trigger m_shootAmp = new Trigger(() -> m_operatorController.getRawButton(4));
+    // m_shootAmp.onTrue(new Sequentnew AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.1, -2.98, 5000));
+
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
 
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
 
-    // Bind full set of SysId routine tests to buttons
+    // Bind full set of SysId routine tests to buttonsP
     // A complete routine should run each of these once
     // Test Button A
     Trigger m_quasiForward = new Trigger(() -> m_testController.getRawButton(1));

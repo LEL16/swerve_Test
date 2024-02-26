@@ -12,9 +12,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Note"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Default"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Note"
           }
         }
       ]

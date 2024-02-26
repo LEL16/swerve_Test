@@ -12,12 +12,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Stop Shoot Note"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Path 3(1)"
@@ -36,27 +30,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Stop Intake Note"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Path 3(3)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Shoot Note"
           }
         }
       ]
