@@ -21,7 +21,7 @@ public class PoseAlignmentCommand extends Command {
 
     PIDController m_rotationPID;
 
-    GenericEntry m_angularErrorEntry;
+    // GenericEntry m_angularErrorEntry;
 
     public PoseAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, Supplier<Pose2d> robotPose,
             Pose2d targetPose) {
@@ -32,7 +32,7 @@ public class PoseAlignmentCommand extends Command {
 
         m_rotationPID = new PIDController(0.5, 0, 0);
 
-        m_angularErrorEntry = Shuffleboard.getTab("Limelight").add("Angular Error", m_angularError).getEntry();
+        // m_angularErrorEntry = Shuffleboard.getTab("Limelight").add("Angular Error", m_angularError).getEntry();
 
         addRequirements(m_drivetrainSubsystem);
     }
@@ -44,7 +44,7 @@ public class PoseAlignmentCommand extends Command {
                 - m_robotPose.get().getRotation().getRadians();
         
         m_drivetrainSubsystem.drive(0, 0, m_rotationPID.calculate(m_angularError), false);
-        m_angularErrorEntry.setDouble(m_angularError);
+        // m_angularErrorEntry.setDouble(m_angularError);
     }
 
     @Override

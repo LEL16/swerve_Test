@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +29,7 @@ import frc.robot.Commands.Drive.BrakeCommand;
 import frc.robot.Commands.Drive.DefaultDriveCommand;
 import frc.robot.Commands.Intake.DefaultIntakeCommand;
 import frc.robot.Commands.Limelight.LimelightAlignmentCommand;
+import frc.robot.Commands.Limelight.LimelightOuttakeAlignment;
 import frc.robot.Commands.Limelight.PoseAlignmentCommand;
 import frc.robot.Commands.Outtake.DefaultOuttakeCommand;
 import frc.robot.Commands.Drive.IdleDriveCommand;
@@ -86,8 +88,8 @@ public class RobotContainer {
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.034 * 3,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 0.5
     ));
 
     // else if (JoystickOperator == false) {
@@ -145,15 +147,29 @@ public class RobotContainer {
       m_field.getObject("path").setPoses(poses);
     });
 
-    NamedCommands.registerCommand("Reverse Intake Wheels", new AutonIntakeCommand(m_intakeSubsystem, 50, 0.7));
-    NamedCommands.registerCommand("Move to Loading Position", new SequentialCommandGroup(
+    NamedCommands.registerCommand("Intake Out", new AutonIntakeCommand(m_intakeSubsystem, 50, 0.7));
+    NamedCommands.registerCommand("Move to High Shooting Position", new SequentialCommandGroup(
       new WaitCommand(0.5),
-      new AutonOuttakeCommand(m_outtakeSubsystem, 100, 168, 0.7)
+      new AutonOuttakeCommand(m_outtakeSubsystem, 100, 50, 5)
+    ));
+    NamedCommands.registerCommand("Move to Low Shooting Position", new SequentialCommandGroup(
+      new WaitCommand(2),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 100, 10, 5)
     ));
     NamedCommands.registerCommand("Align with Target", new PoseAlignmentCommand(m_drivetrainSubsystem, () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()), new Pose2d(0, 5.50, new Rotation2d(0))));
     NamedCommands.registerCommand("Wait for 1 second", new WaitCommand(1.0));
     NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 0));
     NamedCommands.registerCommand("Stop Outtake", new AutonOuttakeCommand(m_outtakeSubsystem, 0, 0, 0));
+    NamedCommands.registerCommand("Full Shooter", new SequentialCommandGroup(
+      new AutonIntakeCommand(m_intakeSubsystem, 50, 0, 5),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, 50, 3),
+        new PositionDriveCommand(m_drivetrainSubsystem, m_drivetrainSubsystem.getPosition().getX(), m_drivetrainSubsystem.getPosition().getY(), m_drivetrainSubsystem.getAngle().getRadians(), 1)
+      ),
+      new AutonIntakeCommand(m_intakeSubsystem, 50, 163, 5),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 100, m_limelightSubsystem.getCalculatedAngle(), kIntakeAutonRate),
+      new AutonIntakeCommand(m_intakeSubsystem, -30, 5)
+    ));
     
     autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     autonomousTab.add("Auto Chooser", autoChooser);
@@ -189,19 +205,22 @@ public class RobotContainer {
     Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
 
+    // Operator button A
+    Trigger m_resetSubsystems = new Trigger(() -> m_operatorController.getRawButton(1));
+    m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
+
     // Driver button X
     Trigger m_brake = new Trigger(() -> m_driveController.getRawButton(3));
     m_brake.onTrue(new BrakeCommand(m_drivetrainSubsystem));
     m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
-    // Trigger m_shootAmp = new Trigger(() -> m_operatorController.getRawButton(4));
-    // m_shootAmp.onTrue(new Sequentnew AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.1, -2.98, 5000));
-
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
+    m_incrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(0.2)));
 
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
+    m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
 
     // Bind full set of SysId routine tests to buttonsP
     // A complete routine should run each of these once
@@ -235,6 +254,10 @@ public class RobotContainer {
     m_poseRotationalAlignment.whileTrue(new PoseAlignmentCommand(m_drivetrainSubsystem,
         () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()),
         new Pose2d(0, 5.50, new Rotation2d(0))));
+
+    // Operator Button Y
+    Trigger m_limelightOuttakeAlignment = new Trigger(() -> m_operatorController.getRawButton(4));
+    m_limelightOuttakeAlignment.whileTrue(new LimelightOuttakeAlignment(m_limelightSubsystem, m_outtakeSubsystem));
   }
 
   public void setPose(double xPos, double yPos, double theta) {

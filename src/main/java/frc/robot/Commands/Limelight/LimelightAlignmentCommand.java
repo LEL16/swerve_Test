@@ -28,7 +28,7 @@ public class LimelightAlignmentCommand extends Command {
     private double m_rotVel;    // Velocity of the robot's rotation
 
     private String m_trackingMode;  // Mode of tracking (translational or rotational)
-    private double m_distanceToTag =3;  // Distance from the robot to the player
+    private double m_distanceToTag = 3;  // Distance from the robot to the player
 
     GenericEntry xVelEntry;
     GenericEntry yVelEntry;
@@ -106,9 +106,7 @@ public class LimelightAlignmentCommand extends Command {
 
     @Override
     public void execute() {
-        m_rotPID.setP(kPEntry.getDouble(0.05));
-        m_rotPID.setI(kPEntry.getDouble(0));
-        m_rotPID.setD(kPEntry.getDouble(0.03));
+        
 
         // m_xVel = MathUtil.applyDeadband(m_xPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
         //         * powerLimit.getDouble(1); // Calculate the velocity of the robot in the x-axis

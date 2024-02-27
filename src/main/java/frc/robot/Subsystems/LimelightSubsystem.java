@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimelightSubsystem extends SubsystemBase {
-    private final double kLimelightLensHeight = Units.inchesToMeters(1.75);
-    private final double kLimelightAngle = 10.0;
+    private final double kLimelightLensHeight = 8.55;
+    private final double kLimelightAngle = 20.0;
 
     private NetworkTable m_networkTable;
 
@@ -38,6 +38,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
     private double m_areaDistance;
     private double m_trigDistance;
+
+    private double m_calculatedAngle;
 
     // All in inches, array index is tag ID - 1
     private final double[] m_tagHeight = new double[] {
@@ -159,14 +161,11 @@ public class LimelightSubsystem extends SubsystemBase {
                                                                                            // on graphed ta values, used
                                                                                            // google sheets to calculate
                                                                                            // curve
-        // m_trigDistance = Units.inchesToMeters(m_tagHeight[(int) m_tid.getDouble(0)] -
-        // kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) +
-        // kLimelightAngle)); // Calculates distance using trigonometry. Reference a
-        // triangle and the notion that tan(theta) = opposite/adjacent. Opposite =
-        // height of target - height of camera, adjacent = distance from camera to
-        // target, theta = angle of camera to target. Rearrange to get d = (h2-h1) /
-        // tan(a1+a2)
+        m_trigDistance = Units.inchesToMeters(51.96 -
+        kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
 
+
+        
         m_pipelineId.setNumber(pipelineIdEntry.getDouble(0));
         // m_camMode.setNumber(camModeEntry.getBoolean(false) ? 1 : 0);
         // m_ledMode.setNumber(ledModeEntry.getBoolean(false) ? 3 : 1);
@@ -214,5 +213,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public Pose2d getTagPose2d(int tagID) {
         return m_tagPose2d[tagID - 1];
+    }
+
+    public double getCalculatedAngle() {
+        // return this.getDistance("Area") * -8.78492 + 57.4318;
+        return this.getDistance("Trig") * -8.78492 + 57.4318;
     }
 }

@@ -95,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angularSpeed = angularSpeed;
     }
 
-    /** Returns the current angle of the intake (rad). */
+    /** Returns the current angle of the intake (degrees). */
     public double getAngle() {
         return m_rotateEncoder.getPosition();
     }
