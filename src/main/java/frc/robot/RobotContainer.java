@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -50,7 +51,7 @@ public class RobotContainer {
 
   // private final GenericHID m_operatorButtonPad = new GenericHID(2);
 
-  private boolean JoystickOperator = true; // Used for testing ButtonPad.
+  // private boolean JoystickOperator = true; // Used for testing ButtonPad.
   private double m_powerLimit = 1.0;
 
   private static final double kIntakeGearRatio = 1;
@@ -144,12 +145,16 @@ public class RobotContainer {
       m_field.getObject("path").setPoses(poses);
     });
 
-    NamedCommands.registerCommand("Intake Note (Low Position)", new AutonIntakeCommand(m_intakeSubsystem, -150, 2.80, 2500));
-    NamedCommands.registerCommand("Outtake Note From Intake", new AutonIntakeCommand(m_intakeSubsystem, 400, 2.80,700));
-    NamedCommands.registerCommand("Intake Note (Spin Wheels)", new AutonIntakeCommand(m_intakeSubsystem, -400, 700));
-    NamedCommands.registerCommand("Wait Command", new WaitCommand(0.5));
-    NamedCommands.registerCommand("Outtake Note", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -2.948,700));
-      
+    NamedCommands.registerCommand("Reverse Intake Wheels", new AutonIntakeCommand(m_intakeSubsystem, 50, 0.7));
+    NamedCommands.registerCommand("Move to Loading Position", new SequentialCommandGroup(
+      new WaitCommand(0.5),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 100, 168, 0.7)
+    ));
+    NamedCommands.registerCommand("Align with Target", new PoseAlignmentCommand(m_drivetrainSubsystem, () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()), new Pose2d(0, 5.50, new Rotation2d(0))));
+    NamedCommands.registerCommand("Wait for 1 second", new WaitCommand(1.0));
+    NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 0));
+    NamedCommands.registerCommand("Stop Outtake", new AutonOuttakeCommand(m_outtakeSubsystem, 0, 0, 0));
+    
     autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     autonomousTab.add("Auto Chooser", autoChooser);
 

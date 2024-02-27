@@ -55,7 +55,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
         m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_outtakeEncoder.getVelocity() + " rpm").getEntry();
-        m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", getAngle() + " rad").getEntry();
+        m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", getAngle() + " deg").getEntry();
     }
 
     /**
@@ -88,7 +88,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     /** Displays the periodically updated outtake rate on the Shuffleboard */
     public void updateShuffleboard() {
         m_outtakeRateEntry.setString(m_outtakeEncoder.getVelocity() + " rpm");
-        m_linearActuatorPositionEntry.setString(getAngle() + " rad");
+        m_linearActuatorPositionEntry.setString(getAngle() + " deg");
     }
 
     @Override

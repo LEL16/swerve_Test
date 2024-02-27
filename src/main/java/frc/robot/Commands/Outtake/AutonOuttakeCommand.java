@@ -7,10 +7,10 @@ import frc.robot.Subsystems.OuttakeSubsystem;
 public class AutonOuttakeCommand extends Command {
     private final OuttakeSubsystem m_outtakeSubsystem;
 
-    private final double m_outtakeRateSupplier;
+    private final double m_outtakeRatePercentSupplier;
     private final double m_outtakeAngle;
 
-    private final long m_maxTime;
+    private final double m_maxTime;
     private long m_recordedTime;
     private boolean m_isTimeRecorded;
 
@@ -20,13 +20,13 @@ public class AutonOuttakeCommand extends Command {
      * Command to engage the outtake using joystick input.
      * 
      * @param outtakeSubsystem The outtake subsystem.
-     * @param outtakeRateSupplier The desired outtake rate (rpm).
+     * @param outtakeRatePercentSupplier The desired outtake rate (percent). + for outtake, - for intake.
      * @param outtakeAngle The desired outtake angle (rad).
-     * @param maxTime The maximum time alloted for this command (ms).
+     * @param maxTime The maximum time alloted for this command (sec).
      */
-    public AutonOuttakeCommand(OuttakeSubsystem outtakeSubsystem, double outtakeRateSupplier, double outtakeAngle, long maxTime) {
+    public AutonOuttakeCommand(OuttakeSubsystem outtakeSubsystem, double outtakeRatePercentSupplier, double outtakeAngle, double maxTime) {
         this.m_outtakeSubsystem = outtakeSubsystem;
-        this.m_outtakeRateSupplier = outtakeRateSupplier;
+        this.m_outtakeRatePercentSupplier = outtakeRatePercentSupplier;
         this.m_outtakeAngle = outtakeAngle;
 
         this.m_maxTime = maxTime;
@@ -41,11 +41,11 @@ public class AutonOuttakeCommand extends Command {
      * Command to engage the outtake using joystick input. Keeps outtake angle the same.
      * 
      * @param outtakeSubsystem The outtake subsystem.
-     * @param outtakeRateSupplier The desired outtake rate (rpm).
-     * @param maxTime The maximum time alloted for this command (ms).
+     * @param outtakeRatePercentSupplier The desired outtake rate (percent). + for outtake, - for intake.
+     * @param maxTime The maximum time alloted for this command (sec).
      */
-    public AutonOuttakeCommand(OuttakeSubsystem outtakeSubsystem, double outtakeRateSupplier, long maxTime) {
-        this(outtakeSubsystem, outtakeRateSupplier, outtakeSubsystem.getAngle(), maxTime);
+    public AutonOuttakeCommand(OuttakeSubsystem outtakeSubsystem, double outtakeRatePercentSupplier, double maxTime) {
+        this(outtakeSubsystem, outtakeRatePercentSupplier, outtakeSubsystem.getAngle(), maxTime);
     }
 
     @Override
@@ -55,12 +55,12 @@ public class AutonOuttakeCommand extends Command {
             m_isTimeRecorded = true;
         }
 
-        m_outtakeSubsystem.outtake(m_outtakeRateSupplier);
+        m_outtakeSubsystem.outtake(-m_outtakeRatePercentSupplier / 100 * OuttakeSubsystem.kOuttakeMaxRate);
         m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
     }
 
     @Override
-    public boolean isFinished() { return System.currentTimeMillis() > m_recordedTime + m_maxTime; }
+    public boolean isFinished() { return System.currentTimeMillis() > m_recordedTime + m_maxTime * 1000; }
 
     @Override
     public void end(boolean interrupted) { 
