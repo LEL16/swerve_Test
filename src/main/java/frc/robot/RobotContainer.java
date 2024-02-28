@@ -83,7 +83,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
         () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.1
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5) * 0.1, 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.1
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(

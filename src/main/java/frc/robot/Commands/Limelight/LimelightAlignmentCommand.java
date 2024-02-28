@@ -19,9 +19,8 @@ public class LimelightAlignmentCommand extends Command {
     private final LimelightSubsystem m_limelightSubsystem;
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
-    private PIDController m_xPID;   // PID controller for the x-axis
-    private PIDController m_yPID;   // PID controller for the y-axis
-    private PIDController m_rotPID;     // PID controller for the rotation
+    private final double kRotSpeedFactor = 15.0; 
+    private final double rotationThreshold = 2.0;
 
     private double m_xVel;  // Velocity of the robot in the x-axis
     private double m_yVel;  // Velocity of the robot in the y-axis
@@ -52,10 +51,6 @@ public class LimelightAlignmentCommand extends Command {
         m_xVelocity = xVel;
         m_yVelocity = yVel;
 
-        m_xPID = new PIDController(0.5, 0, 0);
-        m_yPID = new PIDController(0.05, 0, 0);
-        m_rotPID = new PIDController(0.045, 0, 0);
-
         ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight")
                 .getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
 
@@ -83,10 +78,6 @@ public class LimelightAlignmentCommand extends Command {
     public LimelightAlignmentCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_limelightSubsystem = limelightSubsystem;
-
-        m_xPID = new PIDController(0.5, 0, 0);
-        m_yPID = new PIDController(0.05, 0, 0);
-        m_rotPID = new PIDController(0.045, 0, 0);
 
         ShuffleboardLayout tagTrackingLayout = Shuffleboard.getTab("Limelight")
                 .getLayout("Tag Tracking Data", BuiltInLayouts.kList).withSize(2, 2);
@@ -116,16 +107,20 @@ public class LimelightAlignmentCommand extends Command {
         m_xVel = m_xVelocity.getAsDouble();
         m_yVel = m_yVelocity.getAsDouble();
 
-        m_rotVel = MathUtil.applyDeadband(m_rotPID.calculate(m_limelightSubsystem.getXTargetAngle()), 0.05)
-                * powerLimit.getDouble(1); // Calculate the velocity of the robot's rotation
+        double targetAngle = m_limelightSubsystem.getXTargetAngle();
+        if (Math.abs(targetAngle) > rotationThreshold) {
+                m_rotVel = -m_limelightSubsystem.getXTargetAngle() / 180.0 * kRotSpeedFactor;
+        } else {
+                m_rotVel = 0;
+        }
 
         // m_trackingMode = m_limelightSubsystem.getTrackingMode();
         // m_trackingMode = m_limelightSubsystem.getTrackingMode();
         m_distanceToTag = m_limelightSubsystem.getDistanceToTag();
 
         m_drivetrainSubsystem.drive(
-                m_trackingMode.equals("translational") ? m_xVel : 0,
-                m_trackingMode.equals("translational") ? m_yVel : 0,
+                m_trackingMode.equals("rotational") ? m_xVel : 0,
+                m_trackingMode.equals("rotational") ? m_yVel : 0,
                 m_trackingMode.equals("rotational") ? m_rotVel : 0,
                 m_trackingMode.equals("translational")); // Drives the robot based on the tracking mode selected
 

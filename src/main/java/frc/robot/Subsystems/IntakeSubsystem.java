@@ -20,7 +20,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
 
     private static final double kRotateGearRatio = (1.0 / 20.0) * (60.0 / 64.0);
-    public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 360 / 60; // deg/s
+    public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60.0; // deg/s
 
     private final CANSparkMax m_intakeMotor;
     private final CANSparkMax m_rotateMotor;
