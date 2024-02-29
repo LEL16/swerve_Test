@@ -148,16 +148,17 @@ public class RobotContainer {
     });
 
     NamedCommands.registerCommand("Intake Out", new AutonIntakeCommand(m_intakeSubsystem, 50, 0.7));
+    NamedCommands.registerCommand("Intake In", new AutonIntakeCommand(m_intakeSubsystem, -50, 0.7));
+    NamedCommands.registerCommand("Intake Shooting Position", new AutonIntakeCommand(m_intakeSubsystem, 50, 163, 5));
     NamedCommands.registerCommand("Move to High Shooting Position", new SequentialCommandGroup(
       new WaitCommand(0.5),
       new AutonOuttakeCommand(m_outtakeSubsystem, 100, 50, 5)
     ));
-    NamedCommands.registerCommand("Move to Low Shooting Position", new SequentialCommandGroup(
+    NamedCommands.registerCommand("Move to Calculated Shooting Position", new SequentialCommandGroup(
       new WaitCommand(2),
-      new AutonOuttakeCommand(m_outtakeSubsystem, 100, 10, 5)
+      new AutonOuttakeCommand(m_outtakeSubsystem, 100, m_limelightSubsystem.getCalculatedAngle(), 0.7)
     ));
-    NamedCommands.registerCommand("Align with Target", new PoseAlignmentCommand(m_drivetrainSubsystem, () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()), new Pose2d(0, 5.50, new Rotation2d(0))));
-    NamedCommands.registerCommand("Wait for 1 second", new WaitCommand(1.0));
+    // NamedCommands.registerCommand("Align with Target", new PoseAlignmentCommand(m_drivetrainSubsystem, () -> new Pose2d(m_drivetrainSubsystem.getPosition(), m_drivetrainSubsystem.getAngle()), new Pose2d(0, 5.50, new Rotation2d(0))));
     NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 0));
     NamedCommands.registerCommand("Stop Outtake", new AutonOuttakeCommand(m_outtakeSubsystem, 0, 0, 0));
     NamedCommands.registerCommand("Full Shooter", new SequentialCommandGroup(
@@ -186,19 +187,19 @@ public class RobotContainer {
   }
 
   // Currently used for testing kinematics
-  // public Command autonomousCommands() {
-  // m_powerLimit = 1.0;
-  // // m_intakeSubsystem.reset();
-  // return new SequentialCommandGroup(
-  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5,
-  // Math.PI, 1500),
-  // new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI,
-  // 1500),
-  // new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5,
-  // Math.PI, 1500),
-  // new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
-  // );
-  // }
+  public Command autonomousCommands() {
+  m_powerLimit = 1.0;
+  // m_intakeSubsystem.reset();
+  return new SequentialCommandGroup(
+  new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5,
+  Math.PI, 1500),
+  new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI,
+  1500),
+  new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5,
+  Math.PI, 1500),
+  new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
+  );
+  }
 
   private void configureButtons() {
     // Driver button A

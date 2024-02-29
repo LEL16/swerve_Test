@@ -1,20 +1,44 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.0,
-      "y": 7.0
-    },
-    "rotation": 0.0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "AmirPath"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Full Shooter"
+            "name": "Intake In"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Shooting Position"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EdiPath"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Move to Calculated Shooting Position"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Out"
           }
         }
       ]
