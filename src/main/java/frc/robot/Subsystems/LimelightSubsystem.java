@@ -24,8 +24,8 @@ public class LimelightSubsystem extends SubsystemBase {
     private NetworkTable m_networkTable;
 
     private NetworkTableEntry m_pipelineId;
-    private NetworkTableEntry m_camMode;
-    private NetworkTableEntry m_ledMode;
+    // private NetworkTableEntry m_camMode;
+    // private NetworkTableEntry m_ledMode;
 
     private NetworkTableEntry m_tx;
     private NetworkTableEntry m_ty;
@@ -39,27 +39,27 @@ public class LimelightSubsystem extends SubsystemBase {
     private double m_areaDistance;
     private double m_trigDistance;
 
-    private double m_calculatedAngle;
+    // private double m_calculatedAngle;
 
     // All in inches, array index is tag ID - 1
-    private final double[] m_tagHeight = new double[] {
-            48.500 + 4.500, // Tag 1 (Source)
-            48.500 + 4.500, // Tag 2 (Source)
-            51.875 + 4.500, // Tag 3 (Speaker)
-            51.875 + 4.500, // Tag 4 (Speaker)
-            48.125 + 4.500, // Tag 5 (Amp)
-            48.125 + 4.500, // Tag 6 (Amp)
-            51.875 + 4.500, // Tag 7 (Speaker)
-            51.875 + 4.500, // Tag 8 (Speaker)
-            48.500 + 4.500, // Tag 9 (Source)
-            48.500 + 4.500, // Tag 10 (Source)
-            47.500 + 4.500, // Tag 11 (Stage)
-            47.500 + 4.500, // Tag 12 (Stage)
-            47.500 + 4.500, // Tag 13 (Stage)
-            47.500 + 4.500, // Tag 14 (Stage)
-            47.500 + 4.500, // Tag 15 (Stage)
-            47.500 + 4.500 // Tag 16 (Stage)
-    };
+    // private final double[] m_tagHeight = new double[] {
+    //         48.500 + 4.500, // Tag 1 (Source)
+    //         48.500 + 4.500, // Tag 2 (Source)
+    //         51.875 + 4.500, // Tag 3 (Speaker)
+    //         51.875 + 4.500, // Tag 4 (Speaker)
+    //         48.125 + 4.500, // Tag 5 (Amp)
+    //         48.125 + 4.500, // Tag 6 (Amp)
+    //         51.875 + 4.500, // Tag 7 (Speaker)
+    //         51.875 + 4.500, // Tag 8 (Speaker)
+    //         48.500 + 4.500, // Tag 9 (Source)
+    //         48.500 + 4.500, // Tag 10 (Source)
+    //         47.500 + 4.500, // Tag 11 (Stage)
+    //         47.500 + 4.500, // Tag 12 (Stage)
+    //         47.500 + 4.500, // Tag 13 (Stage)
+    //         47.500 + 4.500, // Tag 14 (Stage)
+    //         47.500 + 4.500, // Tag 15 (Stage)
+    //         47.500 + 4.500 // Tag 16 (Stage)
+    // };
 
     // All in meters, rotation in radians, array index is tag ID - 1
     private Pose2d[] m_tagPose2d = new Pose2d[] {
@@ -82,8 +82,8 @@ public class LimelightSubsystem extends SubsystemBase {
     };
 
     private GenericEntry pipelineIdEntry;
-    private GenericEntry camModeEntry;
-    private GenericEntry ledModeEntry;
+    // private GenericEntry camModeEntry;
+    // private GenericEntry ledModeEntry;
     private GenericEntry XEntry;
     private GenericEntry YEntry;
     private GenericEntry targetAreaEntry;
@@ -102,9 +102,9 @@ public class LimelightSubsystem extends SubsystemBase {
 
         m_pipelineId = m_networkTable.getEntry("getpipe"); // Active pipeline index of the camera (0-9)
 
-        m_camMode = m_networkTable.getEntry("camMode"); // Vision processing mode (0) or driver camera mode (1)
-                                                        // (increases exposure, disables vision processing)
-        m_ledMode = m_networkTable.getEntry("ledMode"); // Current LED mode of the camera (0-pipeline default, 1-off,
+        // m_camMode = m_networkTable.getEntry("camMode"); // Vision processing mode (0) or driver camera mode (1)
+        //                                                 // (increases exposure, disables vision processing)
+        // m_ledMode = m_networkTable.getEntry("ledMode"); // Current LED mode of the camera (0-pipeline default, 1-off,
                                                         // 2-blink, 3-on)
 
         m_tx = m_networkTable.getEntry("tx"); // Horizontal offset from crosshair to target (-29.8 to 29.8 degrees)

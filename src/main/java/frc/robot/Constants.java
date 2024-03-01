@@ -31,7 +31,7 @@ public final class Constants {
 
     public static final int INTAKE_MOTOR = 24;
     public static final int ROTATE_MOTOR = 41;
-    public static final int BEAM_BREAK_SENSOR = 3;
+    public static final int BEAM_BREAK_SENSOR = 7;
     public static final int LOW_LIMIT_SWITCH = 4;
     public static final int HIGH_LIMIT_SWITCH = 6;
 
@@ -40,11 +40,6 @@ public final class Constants {
     public static final int LINEAR_ACTUATOR = 55;
     public static final int OUTTAKE_ROTATE_ENCODER = 9;
 
-    public static final double DRIVE_KP = 0;
-    public static final double DRIVE_KI = 0;
-    public static final double DRIVE_KD = 0;
-
-    public static final double STEER_KP = 0.5;
-    public static final double STEER_KI = 0;
-    public static final double STEER_KD = 0.01;
+    public static final int CLIMBER_MOTOR_1 = 10;
+    public static final int CLIMBER_MOTOR_2 = 14;
 }

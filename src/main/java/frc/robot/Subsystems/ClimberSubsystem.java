@@ -1,38 +1,39 @@
-// package frc.robot.Subsystems;
-// import com.revrobotics.CANSparkBase.IdleMode;
-// import com.revrobotics.CANSparkLowLevel.MotorType;
-// import com.revrobotics.CANSparkMax;
+package frc.robot.Subsystems;
 
-// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-// import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.Constants;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
+public class ClimberSubsystem extends SubsystemBase {
+    private final CANSparkMax m_climberMotor1;
+    private final CANSparkMax m_climberMotor2;
 
-// public class ClimberSubsystem extends SubsystemBase {
-//     private final CANSparkMax m_leftMotor;
-//     private final CANSparkMax m_rightMotor;
+    private double m_climberPower;
 
-//     public ClimberSubsystem(){
-//         m_leftMotor = new CANSparkMax(Constants.LEFT_CLIMBER, MotorType.kBrushless);
-//         m_rightMotor = new CANSparkMax(Constants.RIGHT_CLIMBER, MotorType.kBrushless);
-//         m_leftMotor.restoreFactoryDefaults();
-//         m_rightMotor.restoreFactoryDefaults();
-//         m_leftMotor.setSmartCurrentLimit(20);
-//         m_rightMotor.setSmartCurrentLimit(20);
-//         m_rightMotor.setIdleMode(IdleMode.kBrake);
-//         m_leftMotor.setIdleMode(IdleMode.kBrake);
-//         m_leftMotor.follow(m_rightMotor, true);
+    public ClimberSubsystem() {
+        m_climberMotor1 = new CANSparkMax(Constants.CLIMBER_MOTOR_1, MotorType.kBrushless);
+        m_climberMotor2 = new CANSparkMax(Constants.CLIMBER_MOTOR_2, MotorType.kBrushless);
 
-//         ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
-//     }
+        m_climberMotor1.setIdleMode(IdleMode.kBrake);
+        m_climberMotor2.setIdleMode(IdleMode.kBrake);
 
-//     @Override
-//     public void periodic(){
-        
-//     }
+        m_climberMotor1.setInverted(false);
+        m_climberMotor2.follow(m_climberMotor1, true);
+    }
 
-//     public void climberRotate(double Speed) {
-//         m_rightMotor.setVoltage(5);
-//     }
-// }
+    /**
+     * Engages the climber.
+     * 
+     * @param climberPower The power of the climber [-1, 1].
+     */
+    public void climb(double climberPower) {
+        m_climberPower = climberPower;
+    }
+
+    @Override
+    public void periodic() {
+        m_climberMotor1.set(m_climberPower);
+    }
+}

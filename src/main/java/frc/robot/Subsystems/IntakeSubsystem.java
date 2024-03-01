@@ -20,7 +20,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
 
     private static final double kRotateGearRatio = (1.0 / 20.0) * (60.0 / 64.0);
-    public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60.0; // deg/s
+    public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
     private final CANSparkMax m_intakeMotor;
     private final CANSparkMax m_rotateMotor;
@@ -60,8 +60,8 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeEncoder.setVelocityConversionFactor(kIntakeGearRatio); // rpm
 
         m_rotateEncoder = m_rotateMotor.getEncoder();
-        m_rotateEncoder.setPositionConversionFactor(kRotateGearRatio * 360); // degrees
-        m_rotateEncoder.setVelocityConversionFactor(kRotateGearRatio * 360 / 60); // degrees/s
+        m_rotateEncoder.setPositionConversionFactor(kRotateGearRatio * 2.0 * Math.PI); // rad
+        m_rotateEncoder.setVelocityConversionFactor(kRotateGearRatio * 2.0 * Math.PI / 60); // rad/s
 
         m_beamBreakSensor = new DigitalInput(Constants.BEAM_BREAK_SENSOR);
         m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
@@ -70,8 +70,8 @@ public class IntakeSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
         m_intakeRateEntry = intakeLayout.add("Intake Rate", m_intakeEncoder.getVelocity() + " rpm").getEntry();
-        m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition() + " deg").getEntry();
-        m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " deg/s").getEntry();
+        m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition() + " rad").getEntry();
+        m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
         m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", m_beamBreakSensor.get()).getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
@@ -95,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_angularSpeed = angularSpeed;
     }
 
-    /** Returns the current angle of the intake (degrees). */
+    /** Returns the current angle of the intake (rad). */
     public double getAngle() {
         return m_rotateEncoder.getPosition();
     }
@@ -108,8 +108,8 @@ public class IntakeSubsystem extends SubsystemBase {
     /** Displays the periodically updated intake rate on the Shuffleboard */
     public void updateShuffleboard() {
         m_intakeRateEntry.setString(m_intakeEncoder.getVelocity() + " rpm");
-        m_rotateAngleEntry.setString(m_rotateEncoder.getPosition() + " deg");
-        m_rotateAngularSpeedEntry.setString(m_rotateEncoder.getVelocity() + " deg/s");
+        m_rotateAngleEntry.setString(m_rotateEncoder.getPosition() + " rad");
+        m_rotateAngularSpeedEntry.setString(m_rotateEncoder.getVelocity() + " rad/s");
         m_beamBreakSensorEntry.setBoolean(m_beamBreakSensor.get());
         m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
         m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());

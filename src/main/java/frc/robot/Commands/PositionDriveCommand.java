@@ -1,4 +1,4 @@
-package frc.robot.Commands.Drive;
+package frc.robot.Commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,7 +32,7 @@ public class PositionDriveCommand extends Command {
     private double m_outputY;
     private double m_outputTheta;
 
-    private final double m_maxTime;
+    private final long m_maxTime;
     private long m_recordedTime;
     private boolean m_isTimeRecorded;
 
@@ -45,7 +45,7 @@ public class PositionDriveCommand extends Command {
     * @param theta The angle to rotate to (rad).
     * @param translationalVelocity The resultant theoretical translational velocity (m/s).
     * @param rotationalVelocity The theoretical rotational velocity (rad/s).
-    * @param maxTime The maximum time allowed to elapse (s).
+    * @param maxTime The maximum time allowed to elapse (ms).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,
@@ -53,7 +53,7 @@ public class PositionDriveCommand extends Command {
                                 double theta,
                                 double translationalVelocity,
                                 double rotationalVelocity,
-                                double maxTime) {
+                                long maxTime) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         
         if (x == 0 && y == 0) {
@@ -82,14 +82,14 @@ public class PositionDriveCommand extends Command {
     * @param x The x coordinate to move to (m).
     * @param y The y coordinate to move to (m).
     * @param theta The angle to rotate to (rad).
-    * @param maxTime The maximum time allowed to elapse (s).
+    * @param maxTime The maximum time allowed to elapse (ms).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,
                                 double y,
                                 double theta,
                                 long maxTime) {
-        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed / 10, DrivetrainSubsystem.kMaxAngularSpeed / 10, maxTime);
+        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed, maxTime);
     }
 
     @Override
@@ -137,13 +137,13 @@ public class PositionDriveCommand extends Command {
         m_drivetrainSubsystem.drive(
                 m_outputX,
                 m_outputY,
-                0,
+                m_outputTheta,
                 true
         );
     }
 
     @Override
-    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + m_maxTime * 1000); }
+    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + m_maxTime); }
 
     @Override
     public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }

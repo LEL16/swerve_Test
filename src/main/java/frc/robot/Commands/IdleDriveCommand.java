@@ -1,4 +1,4 @@
-package frc.robot.Commands.Drive;
+package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
