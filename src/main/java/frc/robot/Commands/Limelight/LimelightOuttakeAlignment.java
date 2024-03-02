@@ -44,16 +44,17 @@ public class LimelightOuttakeAlignment extends Command {
     @Override
     public void execute() {
         m_distanceToTag = m_limelightSubsystem.getDistance("Trig");
-        m_calculatedAngle = m_distanceToTag * -8.78492 + 58.4318;
-        m_calculatedAngleExperimental = Math.toDegrees(Math.atan(Units.inchesToMeters(77) / m_distanceToTag));
-        // 1.32 m to tag for Trig
+        m_calculatedAngle = -0.161354293083 * m_distanceToTag - 2.90716351912;
+        //69 inches works well for the close and far distance
+        // m_calculatedAngleExperimental = Math.toDegrees(Math.atan(Units.inchesToMeters(75) / m_distanceToTag));
+        // 1.32 m ground up to tag for Trig
         double currentAngle = m_outtakeSubsystem.getAngle();
-        double targetpower = (m_calculatedAngle-currentAngle)/60 * .9;
-        if (Math.abs(m_calculatedAngle-currentAngle)<3)
-        {
-            targetpower = 0;
-        }
-        tagIdEntry.setDouble(targetpower);
+        double targetpower = (m_calculatedAngle - currentAngle)*60 / Math.PI * .99;
+        // if (Math.abs(m_calculatedAngle-currentAngle)<3)
+        // {
+        //     targetpower = 0;
+        // }
+        tagIdEntry.setDouble(m_calculatedAngle);
         
         m_outtakeSubsystem.rotate(targetpower);
     }

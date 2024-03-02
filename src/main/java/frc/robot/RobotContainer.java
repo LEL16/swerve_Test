@@ -88,7 +88,7 @@ public class RobotContainer {
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.69,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * 0.5
     ));
 

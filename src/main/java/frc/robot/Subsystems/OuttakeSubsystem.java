@@ -82,7 +82,8 @@ public class OuttakeSubsystem extends SubsystemBase {
      * @return Angle of the outtake (degrees).
      */
     public double getAngle() {
-        return -360 * m_rotateEncoder.getAbsolutePosition() + 224;
+        return -2 * Math.PI * m_rotateEncoder.getAbsolutePosition();
+        
     }
 
     /** Displays the periodically updated outtake rate on the Shuffleboard */
