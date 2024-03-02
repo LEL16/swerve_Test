@@ -162,13 +162,20 @@ public class RobotContainer {
       )
     ));
 
-    // Button board column 3, row 2
-    Trigger m_autoAlignSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(4));
-    m_autoAlignSpeaker.onTrue(new AutonOuttakeCommand(m_outtakeSubsystem, 200, -0.15332577852 * m_limelightSubsystem.getDistance("Trig") - 2.8897102266, 500));
+    // Operator Controller Button LB
+    Trigger m_autoAlignSpeaker = new Trigger(() -> m_operatorController.getRawButton(6));
+    m_autoAlignSpeaker.onTrue(new AutonOuttakeCommand(m_outtakeSubsystem, 200, -0.15332577852 * m_limelightSubsystem.getDistance("Trig") - 2.8897102266, 1500));
 
-    // Button board column 4, row 2
-    Trigger m_autoAlignRobot = new Trigger(() -> m_buttonBoard.getRawButton(5));
-    m_autoAlignRobot.onTrue(new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, m_limelightSubsystem.getXTargetAngle(), 1000));
+    // Operator Controller Button RB
+    Trigger m_autoAlignRobot = new Trigger(() -> m_operatorController.getRawButton(5));
+    m_autoAlignRobot.onTrue(new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, Math.toRadians(m_drivetrainSubsystem.getAngle().getDegrees() + m_limelightSubsystem.getXTargetAngle()), 1000));
+
+    // Operator Controller Button Y
+    Trigger m_autoAlignToSpeaker = new Trigger(() -> m_operatorController.getRawButton(4));
+    m_autoAlignToSpeaker.onTrue(new ParallelCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, Math.toRadians(m_drivetrainSubsystem.getAngle().getDegrees() + m_limelightSubsystem.getXTargetAngle()), 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 200, -0.15332577852 * m_limelightSubsystem.getDistance("Trig") - 2.8897102266, 1500)
+    ));
 
     // Button board column 1, row 1
     Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
