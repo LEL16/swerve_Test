@@ -238,8 +238,8 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
-          new WaitCommand(1.0),
-          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.60, 0, 1000)
+          new WaitCommand(1.0)
+          // new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.60, 0, 1000)
         )
       ),
       new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000)
