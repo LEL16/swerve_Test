@@ -95,7 +95,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_outtakeMotor1.setVoltage(m_outtakeFeedforward.calculate(m_outtakeRate));
-        m_linearActuator.set(m_actuatorPower);
+        m_linearActuator.set(-m_actuatorPower);
         updateShuffleboard();
     }
 }

@@ -40,11 +40,10 @@ public class LimelightOuttakeAlignment extends Command {
         
     }
 
-
     @Override
     public void execute() {
         m_distanceToTag = m_limelightSubsystem.getDistance("Trig");
-        m_calculatedAngle = -0.161354293083 * m_distanceToTag - 2.90716351912;
+        m_calculatedAngle = -0.190354293083 * m_distanceToTag - 1.8809;
         //69 inches works well for the close and far distance
         // m_calculatedAngleExperimental = Math.toDegrees(Math.atan(Units.inchesToMeters(75) / m_distanceToTag));
         // 1.32 m ground up to tag for Trig
