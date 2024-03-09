@@ -7,6 +7,7 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -92,11 +93,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond,
             chassisSpeed.omegaRadiansPerSecond, false),
         new HolonomicPathFollowerConfig(
-            new PIDConstants(0, 0, 0), // Translational
-            new PIDConstants(0.5, 0, 0.01), // Rotational
+            new PIDConstants(5.0, 0, 0), // Translational
+            new PIDConstants(5.0, 0, 0), // Rotational
             3.81,
             kTrackWidth,
-            new ReplanningConfig()),
+            new ReplanningConfig(false, true)),
         () -> {
           var alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {

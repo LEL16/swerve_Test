@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,35 +48,37 @@ public class RobotContainer {
    */
   public RobotContainer() {
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-        m_drivetrainSubsystem,
-        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
-            * DrivetrainSubsystem.kMaxSpeed,
-        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
-            * DrivetrainSubsystem.kMaxSpeed,
-        () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) * m_powerLimit
-            * DrivetrainSubsystem.kMaxAngularSpeed * 0.5
+      m_drivetrainSubsystem,
+      () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit
+        * DrivetrainSubsystem.kMaxSpeed,
+      () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit
+        * DrivetrainSubsystem.kMaxSpeed,
+      () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) * m_powerLimit
+        * DrivetrainSubsystem.kMaxAngularSpeed * 0.5
     ));
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
-        m_intakeSubsystem, 
-        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
+      m_intakeSubsystem, 
+      () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
+      () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
-        m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
-    ));
-
-    m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
-        m_climberSubsystem,
-        () -> getDPadInput(m_buttonBoard) * 0.25
+      m_outtakeSubsystem, 
+      () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+      () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
     NamedCommands.registerCommand("Intake Note", intakeNoteSequence());
     NamedCommands.registerCommand("Outtake Note", outtakeNoteSequence());
-  
+
+    NamedCommands.registerCommand("Arm To Pickup", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 700));
+    NamedCommands.registerCommand("Arm To Shoot", new AutonIntakeCommand(m_intakeSubsystem, 0, -3.20, 700));
+    NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, 2000));
+    NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 1000));
+    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500));
+    NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 200, 500));
+
     configureButtons();
   }
 
@@ -93,29 +96,7 @@ public class RobotContainer {
     setPose(startX, startY, startTheta);
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
-
-    // SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-    //   new ParallelCommandGroup(
-    //     new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
-    //     new SequentialCommandGroup(
-    //       new WaitCommand(1),
-    //       new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
-    //     )
-    //   )
-    // );
-    // for (SpikeMarkNote note : autonomousNotes) {
-    //   switch(note) {
-    //     case LEFT:
-    //       autonomousSequence.addCommands(leftNoteSequence());
-    //       break;
-    //     case MIDDLE:
-    //       autonomousSequence.addCommands(middleNoteSequence());
-    //       break;
-    //     case RIGHT:
-    //       autonomousSequence.addCommands(rightNoteSequence());
-    //       break;
-    //   }
-    // }
+    
     return AutoBuilder.buildAuto("DefaultAuton");
   }
 
@@ -126,6 +107,10 @@ public class RobotContainer {
     // Driver button A
     Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
+
+    // Driver button Y
+    Trigger m_resetPoseSpeaker = new Trigger(() -> m_driveController.getRawButton(4));
+    m_resetPoseSpeaker.onTrue(new InstantCommand(() -> setPose(1.20, 5.50, (m_limelightSubsystem.getTargetStatus()) ? -m_limelightSubsystem.getXOffset() : 0)));
 
     // Operator button A
     Trigger m_resetSubsystems = new Trigger(() -> m_operatorController.getRawButton(1));
@@ -162,21 +147,11 @@ public class RobotContainer {
       )
     ));
 
-    // Operator Controller Button LB
-    Trigger m_autoAlignSpeaker = new Trigger(() -> m_operatorController.getRawButton(6));
-    m_autoAlignSpeaker.onTrue(new AutonOuttakeCommand(m_outtakeSubsystem, 200, -0.15332577852 * m_limelightSubsystem.getDistance("Trig") - 2.8897102266, 1500));
+    // Driver button B
+    Trigger m_pathFindToTarget = new Trigger(() -> m_driveController.getRawButton(2));
+    m_pathFindToTarget.whileTrue(AutoBuilder.pathfindToPose(m_limelightSubsystem.getTargetPose(6), new PathConstraints(1, 1, 180, 180)));
 
-    // Operator Controller Button RB
-    Trigger m_autoAlignRobot = new Trigger(() -> m_operatorController.getRawButton(5));
-    m_autoAlignRobot.onTrue(new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, Math.toRadians(m_drivetrainSubsystem.getAngle().getDegrees() + m_limelightSubsystem.getXTargetAngle()), 1000));
-
-    // Operator Controller Button Y
-    Trigger m_autoAlignToSpeaker = new Trigger(() -> m_operatorController.getRawButton(4));
-    m_autoAlignToSpeaker.onTrue(new ParallelCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, Math.toRadians(m_drivetrainSubsystem.getAngle().getDegrees() + m_limelightSubsystem.getXTargetAngle()), 1500),
-      new AutonOuttakeCommand(m_outtakeSubsystem, 200, -0.15332577852 * m_limelightSubsystem.getDistance("Trig") - 2.8897102266, 1500)
-    ));
-
+    
     // Button board column 1, row 1
     Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
@@ -239,7 +214,6 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
           new WaitCommand(1.0)
-          // new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.60, 0, 1000)
         )
       ),
       new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000)
@@ -249,7 +223,7 @@ public class RobotContainer {
   private Command outtakeNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
