@@ -39,10 +39,11 @@ public class DefaultDriveCommand extends Command {
                 m_translationXSupplier.getAsDouble(),
                 m_translationYSupplier.getAsDouble(),
                 m_rotationSupplier.getAsDouble(),
-                true
+                true,
+                0.020
         );
     }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, false); }
+    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, false, 0.020); }
 }

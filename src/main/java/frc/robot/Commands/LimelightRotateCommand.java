@@ -97,7 +97,8 @@ public class LimelightRotateCommand extends Command {
                 0.01,
                 0,
                 m_outputTheta,
-                true
+                true,
+                0.020
         );
     }
 
@@ -106,7 +107,7 @@ public class LimelightRotateCommand extends Command {
 
     @Override
     public void end(boolean interrupted) { 
-        m_drivetrainSubsystem.drive(0, 0, 0, true); 
+        m_drivetrainSubsystem.drive(0, 0, 0, true, 0.020); 
         m_isTimeRecorded = false;
     }
 

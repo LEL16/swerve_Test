@@ -7,7 +7,6 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -16,8 +15,10 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -35,6 +37,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utils.LimelightHelpers;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -59,6 +62,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveOdometry m_odometry;
 
+  private final SwerveDrivePoseEstimator m_poseEstimator;
+
   private final GenericEntry m_frontLeftDriveSpeedEntry;
   private final GenericEntry m_frontLeftSteerAngleEntry;
   private final GenericEntry m_frontRightDriveSpeedEntry;
@@ -75,6 +80,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private double m_ySpeed;
   private double m_rot;
   private boolean m_fieldRelative;
+  private double m_periodSeconds;
 
   public DrivetrainSubsystem() {
     m_frontLeft = new SwerveModule(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR, Constants.FRONT_LEFT_MODULE_STEER_MOTOR, Constants.FRONT_LEFT_MODULE_STEER_ENCODER, Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
@@ -86,12 +92,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
 
+    m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(), getModulePositions(), new Pose2d(), VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
     AutoBuilder.configureHolonomic(
         () -> new Pose2d(this.getPosition(), this.getAngle()),
         (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),
         () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
         (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond,
-            chassisSpeed.omegaRadiansPerSecond, false),
+            chassisSpeed.omegaRadiansPerSecond, false, m_periodSeconds),
         new HolonomicPathFollowerConfig(
             new PIDConstants(5.0, 0, 0), // Translational
             new PIDConstants(5.0, 0, 0), // Rotational
@@ -139,24 +147,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param rot The angular rate of the robot (rad/s).
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
     m_xSpeed = xSpeed;
     m_ySpeed = ySpeed;
     m_rot = rot;
     m_fieldRelative = fieldRelative;
+    m_periodSeconds = periodSeconds;
   }
 
   /** Returns the current odometric position of the robot.
    * 
    * @return The current odometric position of the robot.
    */
-  public Translation2d getPosition() { return m_odometry.getPoseMeters().getTranslation(); }
+  public Translation2d getPosition() { return m_poseEstimator.getEstimatedPosition().getTranslation(); }
 
   /** Returns the current odometric angle of the robot. 
    * 
    * @return The current odometric angle of the robot.
    */
-  public Rotation2d getAngle() { return m_odometry.getPoseMeters().getRotation(); }
+  public Rotation2d getAngle() { return m_poseEstimator.getEstimatedPosition().getRotation(); }
 
   /**
    * Sets the odometric position and angle of the robot.
@@ -192,6 +201,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     };
   }
 
+  /** Updates the odometry of the robot. */
+  public void updateOdometry() {
+    m_poseEstimator.update(m_navx.getRotation2d(), getModulePositions());
+
+    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    if(limelightMeasurement.tagCount >= 2) {
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
+      m_poseEstimator.addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+    }
+  }
+
   /** Displays the periodically updated robot poses on the Shuffleboard */
   public void updateShuffleboard() {
     m_frontLeftDriveSpeedEntry.setString(m_frontLeft.getState().speedMetersPerSecond + " m/s");
@@ -215,20 +235,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
-            m_fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(m_xSpeed, m_ySpeed, m_rot, getAngle())
-                : new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot));
+            ChassisSpeeds.discretize(
+                m_fieldRelative
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                        m_xSpeed, m_ySpeed, m_rot, getAngle())
+                    : new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
+                m_periodSeconds));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
 
-    m_odometry.update(
-        m_navx.getRotation2d(),
-        getModulePositions()
-    );
-
+    updateOdometry();
     updateShuffleboard();
   }
 

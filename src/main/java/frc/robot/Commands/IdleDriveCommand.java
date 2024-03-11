@@ -37,7 +37,7 @@ public class IdleDriveCommand extends Command {
     public void initialize() {
         m_timer.reset();
         m_timer.start();
-        m_drivetrainSubsystem.drive(0, 0, 0, true);
+        m_drivetrainSubsystem.drive(0, 0, 0, true, 0.020);
     }
 
     @Override

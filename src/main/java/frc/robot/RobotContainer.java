@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
-import frc.robot.Commands.DefaultClimberCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
@@ -74,10 +73,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Arm To Pickup", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 700));
     NamedCommands.registerCommand("Arm To Shoot", new AutonIntakeCommand(m_intakeSubsystem, 0, -3.20, 700));
-    NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, 2000));
+    NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, 700));
     NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 1000));
-    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500));
-    NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 200, 500));
+    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500));
+    NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 200, 700));
 
     configureButtons();
   }

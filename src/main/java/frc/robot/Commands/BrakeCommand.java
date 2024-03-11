@@ -24,10 +24,11 @@ public class BrakeCommand extends Command {
                 0.001,
                 0,
                 0.001,
-                true
+                true,
+                0.020
         );
     }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
+    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true, 0.020); }
 }
