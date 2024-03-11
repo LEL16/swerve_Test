@@ -60,7 +60,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveKinematics m_kinematics;
 
-  private final SwerveDriveOdometry m_odometry;
+  // private final SwerveDriveOdometry m_odometry;
 
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -90,7 +90,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
+    // m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
 
     m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(), getModulePositions(), new Pose2d(), VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 

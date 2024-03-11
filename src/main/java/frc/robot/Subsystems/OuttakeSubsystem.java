@@ -5,7 +5,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -34,6 +38,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     private double m_outtakeRate;
     private double m_actuatorPower;
 
+    private final Debouncer m_rotateDebouncer;
+    private final PIDController m_rotatePIDController;
+
     public OuttakeSubsystem() {
         m_outtakeMotor1 = new CANSparkMax(Constants.OUTTAKE_MOTOR_1, MotorType.kBrushless);
         m_outtakeMotor2 = new CANSparkMax(Constants.OUTTAKE_MOTOR_2, MotorType.kBrushless);
@@ -51,6 +58,9 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio); // rpm
         m_outtakeEncoder.setVelocityConversionFactor(kOuttakeGearRatio); // rpm
         m_rotateEncoder = new DutyCycleEncoder(Constants.OUTTAKE_ROTATE_ENCODER);
+
+        m_rotateDebouncer = new Debouncer(0.50);
+        m_rotatePIDController = new PIDController(7.5, 0.0, 0.0);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
@@ -74,6 +84,16 @@ public class OuttakeSubsystem extends SubsystemBase {
      */
     public void rotate(double actuatorPower) {
         m_actuatorPower = actuatorPower;
+    }
+
+    public void setDesiredAngle(Rotation2d targetAngle) {
+        double m_currentAngleRadians = this.getAngle();
+        double m_targetAngleRadians = targetAngle.getRadians();
+
+        if (m_rotateDebouncer.calculate(Math.abs(m_currentAngleRadians - m_targetAngleRadians) >= Units.degreesToRadians(1.0))) {
+            double output = m_rotatePIDController.calculate(m_currentAngleRadians, m_targetAngleRadians);
+            m_actuatorPower = Math.max(-1.0, Math.min(1.0, output));
+        }
     }
 
     /**

@@ -169,8 +169,8 @@ public class LimelightSubsystem extends SubsystemBase {
      * 
      * @return The calculated shooter angle (rad).
     */
-    public double getShooterAngle() {
-        return -0.190354293083 * getDistance("Trig") - 1.930509;
+    public double getShooterAngle(double distance) {
+        return -0.190354293083 * distance - 1.930509;
     }
 
     /** Displays the periodically updated Limelight values on Shuffleboard. */

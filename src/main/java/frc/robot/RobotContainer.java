@@ -75,7 +75,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Arm To Shoot", new AutonIntakeCommand(m_intakeSubsystem, 0, -3.20, 700));
     NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, 700));
     NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 1000));
-    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500));
+    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle(m_limelightSubsystem.getDistance("Trig")) : -2.10, 1500));
     NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 200, 700));
 
     configureButtons();
@@ -222,7 +222,7 @@ public class RobotContainer {
   private Command outtakeNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle() : -2.10, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle(m_limelightSubsystem.getDistance("Trig")) : -2.10, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
