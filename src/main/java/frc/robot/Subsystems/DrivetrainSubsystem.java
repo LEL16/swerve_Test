@@ -175,7 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param theta The angle of the robot (rad).
    */
   public void setPose(double xPos, double yPos, double theta) {
-    m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
+    m_poseEstimator.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
   }
 
   /** 
