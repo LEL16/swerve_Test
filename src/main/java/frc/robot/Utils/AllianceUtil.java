@@ -25,7 +25,7 @@ public class AllianceUtil {
     }
   }
 
-  public static Pose2d getSpeakerPose() {
-    return isRedAlliance() ? new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0)) : new Pose2d(0.0, 5.5, Rotation2d.fromDegrees(0.0));
+  public static Pose2d getSpeakerPose(String teamColor) {
+    return (isRedAlliance() || teamColor == "red") ? new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0)) : new Pose2d(0.0, 5.5, Rotation2d.fromDegrees(0.0));
   }
 }

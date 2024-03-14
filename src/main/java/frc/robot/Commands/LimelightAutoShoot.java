@@ -32,7 +32,7 @@ public class LimelightAutoShoot extends Command {
 
     @Override
     public void initialize() {
-        m_speakerPose = AllianceUtil.getSpeakerPose();
+        m_speakerPose = AllianceUtil.getSpeakerPose("blue");
     }
 
     @Override

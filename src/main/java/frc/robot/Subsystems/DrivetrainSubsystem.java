@@ -41,7 +41,7 @@ import frc.robot.Utils.LimelightHelpers;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-  private static final double kTrackWidth = 0.60; // meters
+  private static final double kTrackWidth = 0.8255; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kDriveGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
