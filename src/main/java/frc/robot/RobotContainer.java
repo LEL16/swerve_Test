@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -21,12 +22,16 @@ import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
+import frc.robot.Commands.LimelightAutoShoot;
+import frc.robot.Commands.LimelightOuttakeCommand;
+import frc.robot.Commands.LimelightRotateCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.ClimberSubsystem;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
+import frc.robot.Utils.AllianceUtil;
 
 /** Represents the entire robot. */
 public class RobotContainer {
@@ -58,25 +63,26 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
       m_intakeSubsystem, 
-      () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
+      () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.45, 
       () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
       m_outtakeSubsystem, 
-      () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+      () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.53,
       () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
     NamedCommands.registerCommand("Intake Note", intakeNoteSequence());
     NamedCommands.registerCommand("Outtake Note", outtakeNoteSequence());
 
-    NamedCommands.registerCommand("Arm To Pickup", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 700));
-    NamedCommands.registerCommand("Arm To Shoot", new AutonIntakeCommand(m_intakeSubsystem, 0, -3.20, 700));
-    NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, 700));
-    NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, 1000));
-    NamedCommands.registerCommand("Warm Up Shooter", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle(m_limelightSubsystem.getDistance("Trig")) : -2.10, 1500));
-    NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 200, 700));
+    NamedCommands.registerCommand("Arm To Pickup", new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500));
+    NamedCommands.registerCommand("Arm To Shoot", new AutonIntakeCommand(m_intakeSubsystem, 0, 1, 1000));
+    NamedCommands.registerCommand("Start Intake", new AutonIntakeCommand(m_intakeSubsystem, -400, -3.3, 1500));
+    NamedCommands.registerCommand("Stop Intake", new AutonIntakeCommand(m_intakeSubsystem, 0, -3.3, 500));
+    NamedCommands.registerCommand("Warm Up Shooter", new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, m_drivetrainSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000));
+    NamedCommands.registerCommand("Shoot", new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500));
+    NamedCommands.registerCommand("Initial Shot", new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, -0.85, 1000));
 
     configureButtons();
   }
@@ -96,7 +102,7 @@ public class RobotContainer {
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
     
-    return AutoBuilder.buildAuto("DefaultAuton");
+    return AutoBuilder.buildAuto("TestPath");
   }
 
   /**
@@ -137,23 +143,26 @@ public class RobotContainer {
     ));
 
     // Button board column 2, row 2
-    Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
+    Trigger m_outtakeSpeaker = new Trigger(() -> m_operatorController.getRawButton(6)); // BB
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
+      new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, m_drivetrainSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000),
       new SequentialCommandGroup(
-        new WaitCommand(1),
-        new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
-      )
+        new WaitCommand(0.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+      ),
+      new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
     ));
 
     // Driver button B
     Trigger m_pathFindToTarget = new Trigger(() -> m_driveController.getRawButton(2));
     m_pathFindToTarget.whileTrue(AutoBuilder.pathfindToPose(m_limelightSubsystem.getTargetPose(6), new PathConstraints(1, 1, 180, 180)));
 
-    
     // Button board column 1, row 1
     Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
+
+    Trigger m_autoShootCommand = new Trigger(() -> m_operatorController.getRawButton(4));
+    m_autoShootCommand.whileTrue(new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, m_drivetrainSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1500));
   }
 
   /**
@@ -222,7 +231,7 @@ public class RobotContainer {
   private Command outtakeNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle(m_limelightSubsystem.getDistance("Trig")) : -2.10, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, (m_limelightSubsystem.getTargetStatus()) ? m_limelightSubsystem.getShooterAngle(m_limelightSubsystem.getDistance("Pose")) : -2.10, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)

@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6153838917364425,
-        "y": 2.4323841240275086
+        "x": 7.754979732498693,
+        "y": 2.4241431649767713
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.124229405153967,
-        "y": 2.0464770274269903
+        "x": 7.263825245916218,
+        "y": 2.038236068376253
       },
       "isLocked": false,
       "linkedName": "Center 4"
     },
     {
       "anchor": {
-        "x": 5.524939881048594,
-        "y": 1.7724617267416347
+        "x": 5.939800067902362,
+        "y": 2.0728180685979307
       },
       "prevControl": {
-        "x": 6.60968660968661,
-        "y": 1.7424290119235524
+        "x": 7.024546796540382,
+        "y": 2.0427853537798484
+      },
+      "nextControl": {
+        "x": 4.85505333926434,
+        "y": 2.102850783416013
+      },
+      "isLocked": false,
+      "linkedName": "ShootAbroad"
+    },
+    {
+      "anchor": {
+        "x": 2.6256333254458344,
+        "y": 3.560094309924865
+      },
+      "prevControl": {
+        "x": 3.0589342776397506,
+        "y": 3.2673233962803274
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ShootingPoint"
+      "linkedName": "ShootChain"
     }
   ],
   "rotationTargets": [],
@@ -91,13 +107,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 145.0,
+    "rotation": -34.59228868750991,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Full Auto Paths",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 0.5456575934157789,
     "velocity": 0
   },
   "useDefaultConstraints": true

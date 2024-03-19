@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7753211512129142,
-        "y": 6.640044321458116
+        "x": 1.4311279977766789,
+        "y": 5.527514849608872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1969112668610487,
-        "y": 6.710309340732804
+        "x": 1.81917925016096,
+        "y": 5.527514849608872
       },
       "isLocked": false,
       "linkedName": "Wing Start"
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 6.75
+        "x": 2.3679949214391995,
+        "y": 6.792285196553275
       },
       "prevControl": {
-        "x": 1.8878506230621577,
-        "y": 6.768863523461712
+        "x": 1.9558455445013574,
+        "y": 6.8111487200149865
       },
       "nextControl": null,
       "isLocked": false,
@@ -74,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -154.94425368008316,
+    "rotation": 23.198590513648213,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Full Auto Paths",
   "previewStartingState": {
-    "rotation": -123.17597309483759,
+    "rotation": -2.202598161765872,
     "velocity": 0
   },
   "useDefaultConstraints": true

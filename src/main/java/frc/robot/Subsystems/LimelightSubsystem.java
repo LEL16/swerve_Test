@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utils.AllianceUtil;
 
 public class LimelightSubsystem extends SubsystemBase {
     private final double kLimelightLensHeight = Constants.LIMELIGHT_LENS_HEIGHT;
@@ -74,7 +75,6 @@ public class LimelightSubsystem extends SubsystemBase {
     public void periodic() {
         m_areaDistance = Units.inchesToMeters(54.4 * Math.pow(m_ta.getDouble(0), -0.475)); // Area Distance
         m_trigDistance = Units.inchesToMeters(51.96 - kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Trigonometry Distance
-
         updateShuffleboard();
     }
 
@@ -170,7 +170,8 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return The calculated shooter angle (rad).
     */
     public double getShooterAngle(double distance) {
-        return -0.190354293083 * distance - 1.930509;
+        // return Constants.autoShootAngles.get(distance);
+        return 8.29 * Math.pow(distance, -0.0751) - 9.015;
     }
 
     /** Displays the periodically updated Limelight values on Shuffleboard. */

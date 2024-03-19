@@ -45,7 +45,7 @@ public class LimelightAutoShoot extends Command {
 
         m_outtakeSubsystem.setDesiredAngle(desiredAngle);
 
-        // double motorRPM = m_limelightSubsystem.getShooterRPM(distance);
+        // double motorRPM = m_limelightSubsystem.getShooterRPM(distanc%e);
         // m_outtakeSubsystem.outtake(motorRPM);
 
         Rotation2d armAngleError = desiredAngle.minus(Rotation2d.fromRadians(m_outtakeSubsystem.getAngle()));
@@ -62,8 +62,6 @@ public class LimelightAutoShoot extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        m_intakeSubsystem.reset();
-
         m_intakeSubsystem.intake(0);
         m_outtakeSubsystem.rotate(0);
         m_outtakeSubsystem.outtake(0);

@@ -69,7 +69,7 @@ public class LimelightRotateCommand extends Command {
         m_initialAngle = m_drivetrainSubsystem.getAngle();
 
         // Calculates absolute desired theta
-        m_theta = m_initialAngle.getRadians() - m_limelightSubsysystem.getXOffset();
+        m_theta = m_initialAngle.getRadians() - m_drivetrainSubsystem.getAngleToSpeaker();
 
         // Calculates theoretical angular vector
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
@@ -91,7 +91,7 @@ public class LimelightRotateCommand extends Command {
             m_isTimeRecorded = true;
         }
 
-        m_outputTheta = clip(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
+        m_outputTheta = clip(m_theta, m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 0.01,
