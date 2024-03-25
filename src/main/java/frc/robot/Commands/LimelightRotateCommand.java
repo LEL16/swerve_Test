@@ -68,7 +68,7 @@ public class LimelightRotateCommand extends Command {
             m_isTimeRecorded = true;
         }
 
-        m_outputTheta = clip(m_limelightSubsysystem.getDrivetrainAngleChange(), m_rotationSupplier);
+        m_outputTheta = clip(m_drivetrainSubsystem.getAngleToSpeaker(), m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 0.01,

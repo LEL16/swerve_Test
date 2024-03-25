@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4311279977766789,
+        "y": 5.527514849608872
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.81917925016096,
+        "y": 5.527514849608872
+      },
+      "isLocked": false,
+      "linkedName": "Wing Start"
+    },
+    {
+      "anchor": {
+        "x": 2.3679949214391995,
+        "y": 6.792285196553275
+      },
+      "prevControl": {
+        "x": 1.9558455445013574,
+        "y": 6.8111487200149865
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Wing 1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Start Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Stop Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 180.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 23.198590513648213,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Full Auto Paths",
+  "previewStartingState": {
+    "rotation": -2.202598161765872,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

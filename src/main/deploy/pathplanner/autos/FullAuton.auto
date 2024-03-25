@@ -1,0 +1,266 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.43,
+      "y": 5.53
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Initial Shot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "StartTo1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1To2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2To3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 to C5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot C5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "ShootToC4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot C4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "ShootToC3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Start Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot C3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

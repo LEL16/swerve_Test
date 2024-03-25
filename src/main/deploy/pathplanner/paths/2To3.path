@@ -1,0 +1,104 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.35,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0166698250657547,
+        "y": 5.246454772510115
+      },
+      "isLocked": false,
+      "linkedName": "WIng 2"
+    },
+    {
+      "anchor": {
+        "x": 2.35,
+        "y": 4.368142031576503
+      },
+      "prevControl": {
+        "x": 2.0400914981573175,
+        "y": 4.789732147224637
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Wing 3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Stop Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shooting Warm Up",
+      "waypointRelativePos": 0.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Warm Up Shooter"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Start Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 180.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -27.740354004462212,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Full Auto Paths",
+  "previewStartingState": {
+    "rotation": 1.7640193994973667,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
