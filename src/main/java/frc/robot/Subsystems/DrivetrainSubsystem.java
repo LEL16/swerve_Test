@@ -4,8 +4,6 @@
 
 package frc.robot.Subsystems;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -50,7 +48,7 @@ import frc.robot.Utils.LimelightHelpers.PoseEstimate;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-  private static final double kTrackWidth = 0.8255; // meters
+  private static final double kTrackWidth = 0.60; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kDriveGearRatio * SwerveModule.kWheelRadius * 2
       * Math.PI; // meters per second
@@ -114,6 +112,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(),
     // getModulePositions());
+
     m_field = new Field2d();
 
     m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(), getModulePositions(),
@@ -121,21 +120,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     AutoBuilder.configureHolonomic(
-        () -> new Pose2d(this.getPosition(), this.getAngle()),
-        (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),
-        () -> m_kinematics.toChassisSpeeds(getModuleStates()),
+        () -> new Pose2d(getPosition(), getAngle()),
+        (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getRadians()),
+        () -> m_kinematics.toChassisSpeeds(new SwerveModuleState[] {
+            m_frontLeft.getState(),
+            m_frontRight.getState(),
+            m_backLeft.getState(),
+            m_backRight.getState(),
+        }),
         (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond,
             chassisSpeed.omegaRadiansPerSecond, false, 0.020),
         new HolonomicPathFollowerConfig(
-            new PIDConstants(3.5, 0, 0), // Translational
-            new PIDConstants(5.0, 0, 0), // Rotational
+          new PIDConstants(2.0, 0.1, 0.1), // Trans
+          new PIDConstants(2.5, 0.2, 0.1), // Rot
             3.81,
             kTrackWidth,
             new ReplanningConfig(false, true)),
         () -> {
           var alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Blue;
+            return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
         },
@@ -265,11 +269,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
       return;
     }
     if (limelightMeasurement.tagCount == 1) {
-      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999)); // Increase to trust vision less; X, Y, Rotation
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999)); // Increase to trust vision less;
+                                                                                       // X, Y, Rotation
       m_poseEstimator.addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
     }
     if (limelightMeasurement.tagCount >= 2) {
-      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(1.0, 1.0, 9999999)); // Increase to trust vision less; X, Y, Rotation
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(1.0, 1.0, 9999999)); // Increase to trust vision less;
+                                                                                       // X, Y, Rotation
       m_poseEstimator.addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
     }
   }
@@ -322,15 +328,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     updateShuffleboard();
   }
 
-  public SwerveModuleState[] getModuleStates() {
-    return new SwerveModuleState[] {
-        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_backLeft.getState(),
-        m_backRight.getState(),
-    };
-  }
-
   public double getDistanceToSpeaker() {
     return m_poseDistance;
   }
@@ -341,7 +338,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
+    // private static final double kWheelRadius = Units.inchesToMeters(2.0);
     private static final double kDriveGearRatio = (16.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+    // private static final double kDriveGearRatio = 1 / 6.12;
     private static final double kSteerGearRatio = 7.0 / 150.0;
 
     private final CANSparkMax m_driveMotor;

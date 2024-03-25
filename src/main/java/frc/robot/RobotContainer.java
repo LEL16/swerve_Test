@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-// import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -22,7 +20,6 @@ import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
-import frc.robot.Commands.LimelightAutoShoot;
 import frc.robot.Commands.LimelightOuttakeCommand;
 import frc.robot.Commands.LimelightRotateCommand;
 import frc.robot.Commands.PositionDriveCommand;
@@ -72,6 +69,8 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.53,
       () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
+
+    
 
     NamedCommands.registerCommand("Intake Note", intakeNoteSequence());
     NamedCommands.registerCommand("Outtake Note", outtakeNoteSequence());

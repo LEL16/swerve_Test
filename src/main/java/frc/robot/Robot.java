@@ -12,9 +12,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
@@ -39,40 +42,50 @@ public class Robot extends TimedRobot {
   private GenericEntry m_autonomousNotesOutputEntry;
 
   /**
-   * This function is run when the robot is first started up and should be used for any
+   * This function is run when the robot is first started up and should be used
+   * for any
    * initialization code.
    */
   @Override
-  public void robotInit() { 
-    m_container = new RobotContainer(); 
+  public void robotInit() {
+    m_container = new RobotContainer();
 
     m_tab = Shuffleboard.getTab("Autonomous");
 
-    m_startPositionLayout = m_tab.getLayout("Starting Position", BuiltInLayouts.kList).withSize(2, 5).withPosition(0, 0);
+    m_startPositionLayout = m_tab.getLayout("Starting Position", BuiltInLayouts.kList).withSize(2, 5).withPosition(0,
+        0);
     m_startXEntry = m_startPositionLayout.add("Input Starting X Position (m)", 0).getEntry();
     m_startYEntry = m_startPositionLayout.add("Input Starting Y Position (m)", 0).getEntry();
     m_startThetaEntry = m_startPositionLayout.add("Input Starting Angle (deg)", 0).getEntry();
     m_startPositionOutputEntry = m_startPositionLayout.add("Starting Position", "(0, 0, 0)").getEntry();
-    m_startPositionLayout.add("Instructions", "The origin is the center of the front subwoofer edge. The +x direction is forward or away from the driver station. From the POV of the driver station, the +y direction is left. Counterclocksize is +theta. Measure starting position from the origin to the center of the robot, in meters and degrees.");
+    m_startPositionLayout.add("Instructions",
+        "The origin is the center of the front subwoofer edge. The +x direction is forward or away from the driver station. From the POV of the driver station, the +y direction is left. Counterclocksize is +theta. Measure starting position from the origin to the center of the robot, in meters and degrees.");
 
     m_noteChooserLayout = m_tab.getLayout("Notes", BuiltInLayouts.kList).withSize(2, 5).withPosition(2, 0);
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton)
+        .getEntry();
+    m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton)
+        .getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Notes", "{}").getEntry();
-    m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
+    m_noteChooserLayout.add("Instructions",
+        "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like
+   * diagnostics that you want ran during disabled, autonomous, teleoperated and
+   * test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() { 
-    CommandScheduler.getInstance().run(); 
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
 
     m_startX = m_startXEntry.getDouble(0);
     m_startY = m_startYEntry.getDouble(0);
@@ -118,7 +131,7 @@ public class Robot extends TimedRobot {
   private String printAutonomousNotes() {
     String autonomousNotes = "{";
     for (SpikeMarkNote note : m_autonomousNotes) {
-      switch(note) {
+      switch (note) {
         case LEFT:
           autonomousNotes += " LEFT ";
           break;
