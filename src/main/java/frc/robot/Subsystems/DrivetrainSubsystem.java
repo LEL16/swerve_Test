@@ -127,9 +127,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_field = new Field2d();
 
-    m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(), getModulePositions(),
-        new Pose2d(), VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+        m_kinematics,
+        m_navx.getRotation2d(),
+        getModulePositions(),
+        new Pose2d(0.0, 0.0, m_navx.getRotation2d()));
 
     AutoBuilder.configureHolonomic(
         () -> new Pose2d(getPosition(), getAngle()),
@@ -388,19 +390,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
       return;
     }
 
+    m_poseEstimator.update(m_navx.getRotation2d(), getModulePositions());
+
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     if (limelightMeasurement.tagCount == 0) {
       return;
     }
 
     if (limelightMeasurement.tagCount == 1) {
-      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999)); // Increase to trust vision less
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7,9999999)); // Increase to trust vision less
     } else if (limelightMeasurement.tagCount >= 2) {
       m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 9999999)); // Increase to trust vision less
+    } else {
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(1.0, 1.0, 9999999)); // Increase to trust vision less
     }
 
     m_poseEstimator.addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-    m_poseEstimator.update(m_navx.getRotation2d(), getModulePositions());
   }
 
   /** Displays the periodically updated robot poses on the Shuffleboard */
